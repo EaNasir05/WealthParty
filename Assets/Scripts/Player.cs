@@ -1,0 +1,52 @@
+using UnityEngine;
+
+public class Player
+{
+    private string name;
+    private int money;
+    private int victoryPoints;
+    private int abruzzoPoints;
+    private int campaniaPoints;
+    private int pugliaPoints;
+    private int basilicataPoints;
+    private int calabriaPoints;
+    private int siciliaPoints;
+
+    public Player()
+    {
+        ResetStats();
+    }
+
+    public void ResetStats()
+    {
+        money = 0;
+        victoryPoints = 0;
+        abruzzoPoints = 0;
+        campaniaPoints = 0;
+        pugliaPoints = 0;
+        basilicataPoints = 0;
+        calabriaPoints = 0;
+        siciliaPoints = 0;
+    }
+    
+    public string GetName() { return name; }
+    public int GetMoney() {  return money; }
+    public int GetVictoryPoints() { return victoryPoints; }
+    public int GetAbruzzoPoints() { return abruzzoPoints; }
+    public int GetCampaniaPoints() { return campaniaPoints; }
+    public int GetPugliaPoints() { return pugliaPoints; }
+    public int GetBasilicataPoints() { return basilicataPoints; }
+    public int GetCalabriaPoints() { return calabriaPoints; }
+    public int GetSiciliaPoints() {return siciliaPoints; }
+
+    public void SetName(string name) {  this.name = name; }
+
+    public void AddMoney(int value) { money += value; }
+    public void AddVictoryPoints(int value) { victoryPoints += value; }
+    public void AddAbruzzoPoints(int value) { abruzzoPoints += value; }
+    public void AddCampaniaPoints(int value) { campaniaPoints += value; }
+    public void AddPugliaPoints(int value) { pugliaPoints += value; }
+    public void AddBasilicata(int value) { basilicataPoints += value; }
+    public void AddCalabriaPoints(int value) { calabriaPoints += value; }
+    public void AddSiciliaPoints(int value) { siciliaPoints += value; }
+}
