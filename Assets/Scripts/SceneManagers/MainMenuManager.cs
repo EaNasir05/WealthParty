@@ -22,7 +22,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("RoundStart");
+        SceneManager.LoadScene("ChoosePlayers");
     }
 
     public void Quit()

@@ -12,14 +12,23 @@ EditorBuildSettings:
     path: Assets/Scenes/Tutorial.unity
     guid: 2d0553805e46de9498257aaf089de81f
   - enabled: 1
+    path: Assets/Scenes/ChoosePlayers.unity
+    guid: 2223a53a52249d04fbed735c3052ed5a
+  - enabled: 1
     path: Assets/Scenes/RoundStart.unity
     guid: acde44915471ee940a4fc3dc5e71bf6e
+  - enabled: 1
+    path: Assets/Scenes/TurnStart.unity
+    guid: 319b6b9786423204185afc3f830b9801
   - enabled: 1
     path: Assets/Scenes/GameMap.unity
     guid: 22af45fed7125d44bb1502f195fd0309
   - enabled: 1
     path: Assets/Scenes/Minigame.unity
     guid: 60fa82a9d0716274ebe0f4bbbe7abee8
+  - enabled: 1
+    path: Assets/Scenes/RoundEnd.unity
+    guid: 12201503c0964c841bf22657b329de18
   - enabled: 1
     path: Assets/Scenes/Victory.unity
     guid: 459a51ff0f63e1e49a6aa843a433f433

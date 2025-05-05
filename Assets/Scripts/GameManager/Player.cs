@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player
 {
+    private Texture icon;
     private string name;
     private int money;
     private int victoryPoints;
@@ -29,6 +31,7 @@ public class Player
         siciliaPoints = 0;
     }
     
+    public Texture GetIcon() { return icon; }
     public string GetName() { return name; }
     public int GetMoney() {  return money; }
     public int GetVictoryPoints() { return victoryPoints; }
@@ -39,6 +42,7 @@ public class Player
     public int GetCalabriaPoints() { return calabriaPoints; }
     public int GetSiciliaPoints() {return siciliaPoints; }
 
+    public void SetIcon(Texture icon) { this.icon = icon; }
     public void SetName(string name) {  this.name = name; }
 
     public void AddMoney(int value) { money += value; }
