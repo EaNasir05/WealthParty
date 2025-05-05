@@ -50,7 +50,7 @@ public class Player
     public void AddAbruzzoPoints(int value) { abruzzoPoints += value; }
     public void AddCampaniaPoints(int value) { campaniaPoints += value; }
     public void AddPugliaPoints(int value) { pugliaPoints += value; }
-    public void AddBasilicata(int value) { basilicataPoints += value; }
+    public void AddBasilicataPoints(int value) { basilicataPoints += value; }
     public void AddCalabriaPoints(int value) { calabriaPoints += value; }
     public void AddSiciliaPoints(int value) { siciliaPoints += value; }
 }

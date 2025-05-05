@@ -10,6 +10,11 @@ public class RoundStartManager : MonoBehaviour
     [SerializeField] private GameObject title;
     [SerializeField] private GameObject round;
 
+    private void Awake()
+    {
+        Debug.Log(GameManager.instance.GetRound());
+    }
+
     private void Start()
     {
         round.GetComponent<TMP_Text>().text = "Round " + GameManager.instance.GetRound();
@@ -19,6 +24,8 @@ public class RoundStartManager : MonoBehaviour
             turnsOrder.transform.GetChild(i).transform.GetChild(1).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
             turnsOrder.transform.GetChild(i).transform.GetChild(2).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
         }
+        GameManager.instance.SetCurrentPlayer(0);
+        
     }
 
     private void Update()
@@ -27,7 +34,7 @@ public class RoundStartManager : MonoBehaviour
         {
             if (turnsOrder.activeSelf)
             {
-                SceneManager.LoadScene("GameMap");
+                SceneManager.LoadScene("TurnStart");
             }
             else
             {

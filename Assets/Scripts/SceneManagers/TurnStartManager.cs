@@ -1,16 +1,22 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TurnStartManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private TMP_Text title;
+    [SerializeField] private RawImage icon;
+
+    private void Awake()
     {
-        
+        title.text = "TURNO DI " + PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName();
+        icon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartTurn()
     {
-        
+        GameManager.instance.SetOperative(true);
+        SceneManager.LoadScene("GameMap");
     }
 }
