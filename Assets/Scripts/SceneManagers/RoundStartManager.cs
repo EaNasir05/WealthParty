@@ -12,11 +12,6 @@ public class RoundStartManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log(GameManager.instance.GetRound());
-    }
-
-    private void Start()
-    {
         round.GetComponent<TMP_Text>().text = "Round " + GameManager.instance.GetRound();
         GameManager.instance.ChangeTurnsOrder();
         for (int i = 0; i < 4; i++)
@@ -25,23 +20,19 @@ public class RoundStartManager : MonoBehaviour
             turnsOrder.transform.GetChild(i).transform.GetChild(2).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
         }
         GameManager.instance.SetCurrentPlayer(0);
-        
     }
 
-    private void Update()
+    public void ChangeScene()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (turnsOrder.activeSelf)
         {
-            if (turnsOrder.activeSelf)
-            {
-                SceneManager.LoadScene("TurnStart");
-            }
-            else
-            {
-                round.SetActive(false);
-                title.SetActive(true);
-                turnsOrder.SetActive(true);
-            }
+            SceneManager.LoadScene("TurnStart");
+        }
+        else
+        {
+            round.SetActive(false);
+            title.SetActive(true);
+            turnsOrder.SetActive(true);
         }
     }
 }

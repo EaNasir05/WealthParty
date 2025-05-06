@@ -17,6 +17,7 @@ public class TurnStartManager : MonoBehaviour
     public void StartTurn()
     {
         GameManager.instance.SetOperative(true);
+        GameManager.instance.OnTurnStart();
         SceneManager.LoadScene("GameMap");
     }
 }

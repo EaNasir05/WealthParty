@@ -9,8 +9,7 @@ public class GameManager
     private int currentPlayer;
     private bool operative;
     private int winner;
-    private List<int> pointsPerRound;
-    private List<int> nextTurnOrder;
+    private List<int[]> nextTurnOrder;
 
     public GameManager()
     {
@@ -19,7 +18,7 @@ public class GameManager
             instance = this;
             round = 1;
             currentPlayer = 0;
-            nextTurnOrder = new List<int>();
+            nextTurnOrder = new List<int[]>();
         }
     }
 
@@ -39,19 +38,21 @@ public class GameManager
         }
         else
         {
-            //Ordina in base al guadagno
+            PlayersManager.ChangePlayersOrder(nextTurnOrder[0][0], nextTurnOrder[1][0], nextTurnOrder[2][0], nextTurnOrder[3][0]);
         }
+        ResetNextTurnOrder();
     }
 
     public void ChangeTurn()
     {
-        if (PlayersManager.players[currentPlayer].GetVictoryPoints() == 5)
+        if (PlayersManager.players[currentPlayer].GetVotes() == 400)
         {
             winner = currentPlayer;
             SceneManager.LoadScene("Victory");
         }
         else
         {
+            SortNextTurnOrder();
             if (currentPlayer + 1 == PlayersManager.players.Count)
             {
                 round++;
@@ -67,9 +68,16 @@ public class GameManager
         }
     }
 
-    public void AddPoints(int index, int value)
+    public void OnTurnStart()
     {
-        switch (index)
+        int[] temp = { currentPlayer, 0 };
+        nextTurnOrder.Add(temp);
+    }
+
+    public void AddVotes(/*int index, */int value)
+    {
+        PlayersManager.players[currentPlayer].AddVotes(value);
+        /*switch (index)
         {
             case 0:
                 PlayersManager.players[currentPlayer].AddAbruzzoPoints(value);
@@ -92,19 +100,38 @@ public class GameManager
             default:
                 Debug.Log("RISORSA INESISTENTE");
                 break;
-        }
-        pointsPerRound[currentPlayer] = value;
-        SortNextTurnOrder();
+        }*/
+        int index = nextTurnOrder.Count - 1;
+        nextTurnOrder[index][0] = currentPlayer;
+        nextTurnOrder[index][1] = value;
+    }
+
+    private void ChangeMoneyCount(int value)
+    {
+        PlayersManager.players[currentPlayer].AddMoney(value);
     }
 
     private void SortNextTurnOrder()
     {
-        //ORDINA LA PROSSIMA LISTA DEI TURNI
+        for (int x = 0; x < nextTurnOrder.Count; x++)
+        {
+            for(int y = x; y < nextTurnOrder.Count; y++)
+            {
+                if (nextTurnOrder[x][1] > nextTurnOrder[y][1])
+                {
+                    int[] temp = nextTurnOrder[x];
+                    nextTurnOrder[x] = nextTurnOrder[y];
+                    nextTurnOrder[y] = temp;
+                }
+            }
+        }
     }
 
     public void ResetNextTurnOrder()
     {
-        nextTurnOrder.Clear();
-        pointsPerRound.Clear();
+        if (nextTurnOrder != null)
+        {
+            nextTurnOrder.Clear();
+        }
     }
 }
