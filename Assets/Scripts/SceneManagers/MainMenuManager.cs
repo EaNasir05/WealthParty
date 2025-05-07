@@ -8,6 +8,7 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         PlayersManager.Awake();
+        RegionsManager.Awake();
         new GameManager();
     }
 

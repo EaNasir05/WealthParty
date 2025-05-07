@@ -13,13 +13,12 @@ public class RoundStartManager : MonoBehaviour
     private void Awake()
     {
         round.GetComponent<TMP_Text>().text = "Round " + GameManager.instance.GetRound();
-        GameManager.instance.ChangeTurnsOrder();
+        GameManager.instance.OnRoundStart();
         for (int i = 0; i < 4; i++)
         {
             turnsOrder.transform.GetChild(i).transform.GetChild(1).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
             turnsOrder.transform.GetChild(i).transform.GetChild(2).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
         }
-        GameManager.instance.SetCurrentPlayer(0);
     }
 
     public void ChangeScene()

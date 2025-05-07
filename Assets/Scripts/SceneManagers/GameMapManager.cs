@@ -1,40 +1,70 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameMapManager : MonoBehaviour
 {
-    [SerializeField] private GameObject playerInfo;
+    [SerializeField] private GameObject[] firstPlayerInfo;
+    [SerializeField] private GameObject[] secondPlayerInfo;
+    [SerializeField] private GameObject[] thirdPlayerInfo;
+    [SerializeField] private GameObject[] fourthPlayerInfo;
     [SerializeField] private GameObject playersTab;
     [SerializeField] private GameObject regionTab;
     [SerializeField] private TMP_Text regionName;
-    [SerializeField] private Button[] regions;
-    [SerializeField] private Button StartMinigameButton;
+    [SerializeField] private Button startActivityButton;
+    [SerializeField] private Button upgradeActivityButton;
+    private List<int> unusableActivities;
     private int selectedRegion;
+    private bool readyToStart;
+    private bool readyToUpgrade;
 
     private void Awake()
+    {
+        unusableActivities = new List<int>();
+        readyToStart = true;
+        readyToUpgrade = true;
+
+        UpdatePlayersStats();
+    }
+
+    private void UpdatePlayersStats()
     {
         int count = 0;
         for (int i = 0; i < 4; i++)
         {
-            Transform playerStats;
             if (i == GameManager.instance.GetCurrentPlayer())
             {
-                playerStats = playerInfo.transform.GetChild(0).transform;
+                firstPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
+                firstPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
+                firstPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
+                firstPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
             }
             else
             {
-                playerStats = playersTab.transform.GetChild(count).transform;
+                switch (count)
+                {
+                    case 0:
+                        secondPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
+                        secondPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
+                        secondPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
+                        secondPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
+                        break;
+                    case 1:
+                        thirdPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
+                        thirdPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
+                        thirdPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
+                        thirdPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
+                        break;
+                    case 2:
+                        fourthPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
+                        fourthPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
+                        fourthPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
+                        fourthPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
+                        break;
+                }
                 count++;
-            }
-            playerStats.GetChild(0).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
-            playerStats.GetChild(1).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-        }
-        if (!GameManager.instance.IsOperative())
-        {
-            foreach (Button region in regions)
-            {
-                region.interactable = false;
             }
         }
     }
@@ -51,6 +81,8 @@ public class GameMapManager : MonoBehaviour
 
     public void SelectRegion(int index)
     {
+        startActivityButton.interactable = (!unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost());
+        upgradeActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 1000;
         switch (index)
         {
             case 0:
@@ -72,7 +104,7 @@ public class GameMapManager : MonoBehaviour
                 regionName.text = "SICILIA";
                 break;
             default:
-                regionName.text = "???";
+                regionName.text = "MOLISE";
                 break;
         }
         selectedRegion = index;
@@ -84,49 +116,49 @@ public class GameMapManager : MonoBehaviour
         regionTab.SetActive(false);
     }
 
-    public void StartMinigame()
+    public void StartActivity()
     {
-        switch (selectedRegion)
+        if (readyToStart)
         {
-            case 0:
-                Debug.Log("ABRUZZO");
-                break;
-            case 1:
-                Debug.Log("CAMPANIA");
-                break;
-            case 2:
-                Debug.Log("PUGLIA");
-                break;
-            case 3:
-                Debug.Log("BASILICATA");
-                break;
-            case 4:
-                Debug.Log("CALABRIA");
-                break;
-            case 5:
-                Debug.Log("SICILIA");
-                break;
-            default:
-                Debug.Log("REGIONE INESISTENTE");
-                break;
+            readyToStart = false;
+            GameManager.instance.UseRegion(selectedRegion);
+            UpdatePlayersStats();
+            for (int i = 0; i < 6; i++)
+            {
+                if (selectedRegion != i)
+                {
+                    unusableActivities.Add(i);
+                }
+            }
+            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
+            {
+                startActivityButton.interactable = false;
+            }
+            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
+            {
+                startActivityButton.interactable = false;
+            }
+            readyToStart = true;
         }
-        foreach (Button region in regions)
-        {
-            region.interactable = false;
-        }
-        GameManager.instance.SetOperative(false);
-        regionTab.SetActive(false);
     }
 
-    public void Sabotage()
+    public void UpgradeActivity(int value)
     {
-        foreach (Button region in regions)
+        if (readyToUpgrade)
         {
-            region.interactable = false;
+            readyToUpgrade = false;
+            GameManager.instance.UpgradeRegion(selectedRegion, value);
+            UpdatePlayersStats();
+            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
+            {
+                startActivityButton.interactable = false;
+            }
+            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
+            {
+                startActivityButton.interactable = false;
+            }
+            readyToUpgrade = true;
         }
-        GameManager.instance.SetOperative(false);
-        regionTab.SetActive(false);
-        Debug.Log("SABOTAGE: " + GameManager.instance.GetCurrentPlayer());
     }
 
     public void NextTurn()
