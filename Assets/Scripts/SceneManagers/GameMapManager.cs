@@ -13,6 +13,10 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private GameObject playersTab;
     [SerializeField] private GameObject regionTab;
     [SerializeField] private TMP_Text regionName;
+    [SerializeField] private TMP_Text regionActivityCost;
+    [SerializeField] private TMP_Text regionUpgradeCost;
+    [SerializeField] private TMP_Text regionVotesProduction;
+    [SerializeField] private TMP_Text regionMoneyProduction;
     [SerializeField] private Button startActivityButton;
     [SerializeField] private Button upgradeActivityButton;
     private List<int> unusableActivities;
@@ -81,32 +85,9 @@ public class GameMapManager : MonoBehaviour
 
     public void SelectRegion(int index)
     {
-        startActivityButton.interactable = (!unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost());
+        startActivityButton.interactable = !unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         upgradeActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 1000;
-        switch (index)
-        {
-            case 0:
-                regionName.text = "ABRUZZO";
-                break;
-            case 1:
-                regionName.text = "CAMPANIA";
-                break;
-            case 2:
-                regionName.text = "PUGLIA";
-                break;
-            case 3:
-                regionName.text = "BASILICATA";
-                break;
-            case 4:
-                regionName.text = "CALABRIA";
-                break;
-            case 5:
-                regionName.text = "SICILIA";
-                break;
-            default:
-                regionName.text = "MOLISE";
-                break;
-        }
+        regionName.text = RegionsManager.regions[index].GetName();
         selectedRegion = index;
         regionTab.SetActive(true);
     }
@@ -136,7 +117,7 @@ public class GameMapManager : MonoBehaviour
             }
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
             {
-                startActivityButton.interactable = false;
+                upgradeActivityButton.interactable = false;
             }
             readyToStart = true;
         }
@@ -155,7 +136,7 @@ public class GameMapManager : MonoBehaviour
             }
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
             {
-                startActivityButton.interactable = false;
+                upgradeActivityButton.interactable = false;
             }
             readyToUpgrade = true;
         }

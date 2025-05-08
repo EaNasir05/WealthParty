@@ -12,6 +12,8 @@ public class GameManager
     private List<int[]> nextTurnOrder;
     private List<int[]> regionsUpgrades;
     private int[] activitiesIncomes;
+    private List<int> usedActivities;
+    private int usedActivity;
 
     public GameManager()
     {
@@ -23,6 +25,7 @@ public class GameManager
             nextTurnOrder = new List<int[]>();
             regionsUpgrades = new List<int[]>();
             activitiesIncomes = new int[2];
+            usedActivities = new List<int>();
         }
     }
 
@@ -38,6 +41,7 @@ public class GameManager
     {
         ChangeTurnsOrder();
         SetCurrentPlayer(0);
+        ResetUsedActivities();
     }
 
     public void OnRoundEnd()
@@ -54,12 +58,17 @@ public class GameManager
         activitiesIncomes[1] = 0;
         int[] temp = { currentPlayer, 0 };
         nextTurnOrder.Add(temp);
+        usedActivity = -1;
     }
 
     public void OnTurnEnd()
     {
-        PlayersManager.players[currentPlayer].AddMoney(activitiesIncomes[0]);
-        PlayersManager.players[currentPlayer].AddVotes(activitiesIncomes[1]);
+        AddMoney(activitiesIncomes[0]);
+        AddVotes(activitiesIncomes[1]);
+        if (usedActivity != -1)
+        {
+            usedActivities.Add(usedActivity);
+        }
     }
 
     public void UseRegion(int index)
@@ -67,6 +76,16 @@ public class GameManager
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
         activitiesIncomes[0] += RegionsManager.regions[index].GetMoneyRate();
         activitiesIncomes[1] += RegionsManager.regions[index].GetVotesRate();
+        usedActivity = index;
+    }
+
+    public bool IsAnAvailableRegion(int index)
+    {
+        if (usedActivities.Contains(index))
+        {
+            return false;
+        }
+        return true;
     }
 
     public void UpgradeRegion(int index, int value)
@@ -95,16 +114,18 @@ public class GameManager
     public void AddVotes(int value)
     {
         PlayersManager.players[currentPlayer].AddVotes(value);
-        int index = nextTurnOrder.Count - 1;
-        nextTurnOrder[index][1] += value;
+        if (nextTurnOrder[currentPlayer] == null)
+        {
+            int[] temp = { currentPlayer, value };
+            nextTurnOrder.Add(temp);
+        }
+        else
+        {
+            nextTurnOrder[currentPlayer][1] += value;
+        }
     }
 
     public void AddMoney(int value)
-    {
-        PlayersManager.players[currentPlayer].AddMoney(value);
-    }
-
-    private void ChangeMoneyCount(int value)
     {
         PlayersManager.players[currentPlayer].AddMoney(value);
     }
@@ -117,22 +138,25 @@ public class GameManager
             {
                 if (nextTurnOrder[x][1] > nextTurnOrder[y][1])
                 {
-                    int[] temp = nextTurnOrder[x];
-                    nextTurnOrder[x] = nextTurnOrder[y];
-                    nextTurnOrder[y] = temp;
+                    (nextTurnOrder[y], nextTurnOrder[x]) = (nextTurnOrder[x], nextTurnOrder[y]);
                 }
             }
         }
     }
 
-    public void ResetNextTurnOrder()
+    private void ResetNextTurnOrder()
     {
         nextTurnOrder?.Clear();
     }
 
-    public void ResetRegionsUpgrades()
+    private void ResetRegionsUpgrades()
     {
         regionsUpgrades?.Clear();
+    }
+
+    private void ResetUsedActivities()
+    {
+        usedActivities?.Clear();
     }
 
     private void ChangeTurnsOrder()
@@ -152,7 +176,7 @@ public class GameManager
     public void ChangeTurn()
     {
         OnTurnEnd();
-        if (PlayersManager.players[currentPlayer].GetVotes() == 400)
+        if (PlayersManager.players[currentPlayer].GetVotes() >= 30000)
         {
             winner = currentPlayer;
             SceneManager.LoadScene("Victory");

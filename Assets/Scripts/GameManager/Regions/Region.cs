@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Region
 {
+    private string name;
     private int level;
     private int cost;
     private int moneyRate;
@@ -15,14 +16,18 @@ public class Region
         active = true;
     }
 
-    public void ResetStats(int cost, int moneyRate, int votesRate)
+    public void ResetStats(string name, int cost, int moneyRate, int votesRate)
     {
         level = 0;
+        this.name = name;
         this.cost = cost;
         this.moneyRate = moneyRate;
+        this.currentMoneyRate = moneyRate;
         this.votesRate = votesRate;
+        this.currentVotesRate = votesRate;
     }
 
+    public string GetName() { return name; }
     public int GetLevel() { return level; }
     public int GetCost() { return cost; }
     public int GetMoneyRate() { return currentMoneyRate; }
