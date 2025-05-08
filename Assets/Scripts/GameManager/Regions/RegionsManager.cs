@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class RegionsManager
 {
-    public static List<Region> regions;
+    public static List<Region> regions; //Lista delle regioni nella mappa di gioco
 
-    public static void Awake()
+    public static void Awake() //Istanzia la lista delle regioni e ne resetta le statistiche (Non è l'Awake di Unity)
     {
         if (regions == null)
         {
@@ -25,7 +25,7 @@ public class RegionsManager
         }
     }
 
-    private static void ResetRegionStats(int index)
+    private static void ResetRegionStats(int index) //Resetta le statistiche delle regioni
     {
         switch (index) {
             case 0:

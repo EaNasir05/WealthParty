@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayersManager
 {
-    public static List<Player> players;
+    public static List<Player> players; //Lista dei giocatori, segue l'ordine dei turni di un round
     
-    public static void Awake()
+    public static void Awake() //Istanzia la lista dei giocatori e ne resetta le statistiche (Non è l'Awake di Unity)
     {
         if (players == null)
         {
@@ -24,7 +24,7 @@ public class PlayersManager
         }
     }
 
-    public static void ChangePlayersOrder(int first, int second, int third, int fourth)
+    public static void ChangePlayersOrder(int first, int second, int third, int fourth) //Ordina i giocatori secondo uno specifico criterio
     {
         Player[] temp = { players[first], players[second], players[third], players[fourth] };
         players[0] = temp[0];
@@ -33,7 +33,7 @@ public class PlayersManager
         players[3] = temp[3];
     }
 
-    public static void ShufflePlayers()
+    public static void ShufflePlayers() //Mescola in ordine casuale l'ordine dei giocatori
     {
         for (int i = players.Count - 1; i > 0; i--)
         {

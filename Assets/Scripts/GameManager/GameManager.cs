@@ -4,18 +4,18 @@ using UnityEngine.SceneManagement;
 
 public class GameManager
 {
-    public static GameManager instance;
-    private int round;
-    private int currentPlayer;
-    private bool operative;
-    private int winner;
-    private List<int[]> nextTurnOrder;
-    private List<int[]> regionsUpgrades;
-    private int[] activitiesIncomes;
-    private List<int> usedActivities;
-    private int usedActivity;
+    public static GameManager instance; //Unica istanza statica del GameManager, utilizzabile in tutti gli scripts
+    private int round; //Identificativo dell'attuale round di gioco
+    private int currentPlayer; //Indice del giocatore nella lista del "PlayersManager" che sta attualmente giocando il suo turno
+    private bool operative; //Non ti interessa...
+    private int winner; //Indice che indica il giocatore nella lista del "PlayersManager" che ha vinto la partita
+    private List<int[]> nextTurnOrder; //Lista che contiene i giocatori che hanno giocato questo round e i rispettivi voti che hanno guadagnato in questo round
+    private List<int[]> regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
+    private int[] activitiesIncomes; //Voti e denaro che il "currentPlayer" ha guadagnato tramite attività regionali
+    private List<int> usedActivities; //Attività regionali che gli altri giocatori hanno già usato in questo round
+    private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
 
-    public GameManager()
+    public GameManager() //Istanzia il GameManager
     {
         if (instance == null)
         {
@@ -29,15 +29,17 @@ public class GameManager
         }
     }
 
+    //Metodi usati per ottenere da altri script valori di attributi privati
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
     public bool IsOperative() { return operative; }
 
+    //Metodi usati per cambiare da altri script valori di attributi privati
     public void SetOperative(bool value) { operative = value; }
     public void SetCurrentPlayer(int value) { currentPlayer = value; }
     public void SetRound (int value) { round = value; }
 
-    public void OnRoundStart()
+    public void OnRoundStart() //Insieme di metodi svolgere all'inizio di un round
     {
         ChangeTurnsOrder();
         SetCurrentPlayer(0);
@@ -51,7 +53,7 @@ public class GameManager
         }
     }
 
-    public void OnRoundEnd()
+    public void OnRoundEnd() //Insieme di metodi svolgere al termine di un round
     {
         foreach (int[] upgrade in regionsUpgrades)
         {
@@ -59,7 +61,7 @@ public class GameManager
         }
     }
 
-    public void OnTurnStart()
+    public void OnTurnStart() //Insieme di metodi svolgere all'inizio di un turno
     {
         activitiesIncomes[0] = 0;
         activitiesIncomes[1] = 0;
@@ -68,7 +70,7 @@ public class GameManager
         usedActivity = -1;
     }
 
-    public void OnTurnEnd()
+    public void OnTurnEnd() //Insieme di metodi svolgere alla fine di un turno
     {
         AddMoney(activitiesIncomes[0]);
         AddVotes(activitiesIncomes[1]);
@@ -78,7 +80,7 @@ public class GameManager
         }
     }
 
-    public void UseRegion(int index)
+    public void UseRegion(int index)  //Attività regionale: vengono sottratti soldi al "currentPlayer" e aggiunte risorse ad "activitiesIncomes"
     {
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
         activitiesIncomes[0] += RegionsManager.regions[index].GetMoneyRate();
@@ -86,7 +88,7 @@ public class GameManager
         usedActivity = index;
     }
 
-    public bool IsAnAvailableRegion(int index)
+    public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
     {
         if (usedActivities.Contains(index))
         {
@@ -95,7 +97,7 @@ public class GameManager
         return true;
     }
 
-    public void UpgradeRegion(int index, int value)
+    public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer" e aggiunge un investimento a "regionsUpgrades"
     {
         PlayersManager.players[currentPlayer].AddMoney(-1000);
         int region = -1;
@@ -118,7 +120,7 @@ public class GameManager
         }
     }
 
-    public void AddVotes(int value)
+    public void AddVotes(int value) //Modifica la quantità di voti del "currentPlayer", e tiene il conto dei voti guadagnati in questo turno per calcolare il prossimo ordine dei turni
     {
         PlayersManager.players[currentPlayer].AddVotes(value);
         if (nextTurnOrder[currentPlayer] == null)
@@ -132,12 +134,12 @@ public class GameManager
         }
     }
 
-    public void AddMoney(int value)
+    public void AddMoney(int value) //Modifica la quantità di monete del "currentPlayer"
     {
         PlayersManager.players[currentPlayer].AddMoney(value);
     }
 
-    private void SortNextTurnOrder()
+    private void SortNextTurnOrder() //Modifica l'ordine dei turni del prossimo round in base al guadagno di voti dei giocatori (utilizzato in ChangeTurnsOrder)
     {
         for (int x = 0; x < nextTurnOrder.Count; x++)
         {
@@ -151,22 +153,22 @@ public class GameManager
         }
     }
 
-    private void ResetNextTurnOrder()
+    private void ResetNextTurnOrder() //Svuota "nextTurnOrder"
     {
         nextTurnOrder?.Clear();
     }
 
-    private void ResetRegionsUpgrades()
+    private void ResetRegionsUpgrades() //Svuota "regionsUpgrades"
     {
         regionsUpgrades?.Clear();
     }
 
-    private void ResetUsedActivities()
+    private void ResetUsedActivities() //Svuota "usedActivities"
     {
         usedActivities?.Clear();
     }
 
-    private void ChangeTurnsOrder()
+    private void ChangeTurnsOrder() //Cambia l'ordine dei turni del prossimo round
     {
         if (round == 1)
         {
@@ -180,7 +182,7 @@ public class GameManager
         ResetRegionsUpgrades();
     }
 
-    public void ChangeTurn()
+    public void ChangeTurn() //Fine del turno del "currentPlayer": o inizia un altro turno, o finisce il round, o finisce la partita
     {
         OnTurnEnd();
         if (PlayersManager.players[currentPlayer].GetVotes() >= 30000)

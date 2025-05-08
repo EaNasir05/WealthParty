@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class RoundStartManager : MonoBehaviour
 {
-    [SerializeField] private GameObject turnsOrder;
-    [SerializeField] private GameObject title;
-    [SerializeField] private GameObject round;
-    [SerializeField] private GameObject continueButton;
+    [SerializeField] private GameObject turnsOrder; //Tabella che mostra l'ordine dei giocatori nel prossimo round
+    [SerializeField] private GameObject title; //Dai che lo sai...
+    [SerializeField] private GameObject round; //Scritta che indica quale round sta per iniziare
+    [SerializeField] private GameObject continueButton; //Bottone da premere per vedere il "turnsOrder"
 
     private void Awake()
     {
@@ -22,7 +22,7 @@ public class RoundStartManager : MonoBehaviour
         }
     }
 
-    public void ShowNewTurnsOrder()
+    public void ShowNewTurnsOrder() //Mostra "turnsOrder"
     {
         round.SetActive(false);
         continueButton.SetActive(false);
@@ -30,7 +30,7 @@ public class RoundStartManager : MonoBehaviour
         turnsOrder.SetActive(true);
     }
 
-    public void ChangeScene()
+    public void ChangeScene() //Inizia il primo turno
     {
         SceneManager.LoadScene("TurnStart");
     }

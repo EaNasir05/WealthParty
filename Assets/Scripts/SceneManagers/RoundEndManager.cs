@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class RoundEndManager : MonoBehaviour
 {
-    [SerializeField] private GameObject title;
+    [SerializeField] private GameObject title; //Dai che lo sai...
 
     private void Awake()
     {
@@ -12,7 +12,7 @@ public class RoundEndManager : MonoBehaviour
         GameManager.instance.OnRoundEnd();
     }
 
-    public void ChangeScene()
+    public void ChangeScene() //Inizia un nuovo round
     {
         SceneManager.LoadScene("RoundStart");
     }

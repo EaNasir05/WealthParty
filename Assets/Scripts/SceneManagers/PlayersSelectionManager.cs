@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class PlayersSelectionManager : MonoBehaviour
 {
-    [SerializeField] private RawImage[] playersIcons;
-    [SerializeField] private TMP_InputField[] playersNames;
+    [SerializeField] private RawImage[] playersIcons; //Icone dei giocatori
+    [SerializeField] private TMP_InputField[] playersNames; //Input in cui scrivere i nomi dei giocatori
 
-    private void Awake()
+    private void Awake() //Mette un limite di carattere per i "playersNames"
     {
         for (int i = 0; i < playersNames.Length; i++)
         {
@@ -16,7 +16,7 @@ public class PlayersSelectionManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
+    public void StartGame() //Assegna le icone e i nomi ai players in "PlayersManager" e inizia la partita
     {
         for (int x = 0; x < 4; x++)
         {

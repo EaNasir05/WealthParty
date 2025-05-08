@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject tutorialTab;
+    [SerializeField] private GameObject tutorialTab; //Schermata in cui chiede se vuoi giocare il tutorial
 
     private void Awake()
     {
@@ -12,22 +12,22 @@ public class MainMenuManager : MonoBehaviour
         new GameManager();
     }
 
-    public void NewGame()
+    public void NewGame() //Apre la "tutorialTab"
     {
         tutorialTab.SetActive(true);
     }
 
-    public void StartTutorial()
+    public void StartTutorial() //Apre la scena Tutorial
     {
         SceneManager.LoadScene("Tutorial");
     }
 
-    public void StartGame()
+    public void StartGame() //Inizia una partita senza tutorial
     {
         SceneManager.LoadScene("ChoosePlayers");
     }
 
-    public void Quit()
+    public void Quit() //Chiude il gioco
     {
         Application.Quit();
     }

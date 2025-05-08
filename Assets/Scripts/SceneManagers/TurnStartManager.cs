@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class TurnStartManager : MonoBehaviour
 {
-    [SerializeField] private TMP_Text title;
-    [SerializeField] private RawImage icon;
+    [SerializeField] private TMP_Text title; //Dai che lo sai...
+    [SerializeField] private RawImage icon; //Icona del "currentPlayer"
 
     private void Awake()
     {
@@ -14,7 +14,7 @@ public class TurnStartManager : MonoBehaviour
         icon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
     }
 
-    public void StartTurn()
+    public void StartTurn() //Inizia effettivamente il turno
     {
         GameManager.instance.SetOperative(true);
         GameManager.instance.OnTurnStart();
