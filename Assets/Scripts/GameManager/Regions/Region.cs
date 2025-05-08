@@ -42,7 +42,7 @@ public class Region
         level += value;
         if (level < -5) { level = -5; }
         if (level > 5) { level = 5; }
-        int increase = (int)(moneyRate * 0.10 * level);
+        int increase = (int)(moneyRate * 0.1 * level);
         currentMoneyRate = moneyRate + increase;
     }
 }

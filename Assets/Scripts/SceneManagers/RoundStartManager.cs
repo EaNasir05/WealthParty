@@ -9,10 +9,11 @@ public class RoundStartManager : MonoBehaviour
     [SerializeField] private GameObject turnsOrder;
     [SerializeField] private GameObject title;
     [SerializeField] private GameObject round;
+    [SerializeField] private GameObject continueButton;
 
     private void Awake()
     {
-        round.GetComponent<TMP_Text>().text = "Round " + GameManager.instance.GetRound();
+        round.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
         GameManager.instance.OnRoundStart();
         for (int i = 0; i < 4; i++)
         {
@@ -21,17 +22,16 @@ public class RoundStartManager : MonoBehaviour
         }
     }
 
+    public void ShowNewTurnsOrder()
+    {
+        round.SetActive(false);
+        continueButton.SetActive(false);
+        title.SetActive(true);
+        turnsOrder.SetActive(true);
+    }
+
     public void ChangeScene()
     {
-        if (turnsOrder.activeSelf)
-        {
-            SceneManager.LoadScene("TurnStart");
-        }
-        else
-        {
-            round.SetActive(false);
-            title.SetActive(true);
-            turnsOrder.SetActive(true);
-        }
+        SceneManager.LoadScene("TurnStart");
     }
 }

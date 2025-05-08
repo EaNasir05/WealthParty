@@ -42,6 +42,13 @@ public class GameManager
         ChangeTurnsOrder();
         SetCurrentPlayer(0);
         ResetUsedActivities();
+        foreach (Player player in PlayersManager.players)
+        {
+            if (player.GetMoney() < 2000)
+            {
+                player.AddMoney(2000 - player.GetMoney());
+            }
+        }
     }
 
     public void OnRoundEnd()
@@ -188,7 +195,7 @@ public class GameManager
             {
                 round++;
                 operative = true;
-                SceneManager.LoadScene("RoundStart");
+                SceneManager.LoadScene("RoundEnd");
             }
             else
             {

@@ -18,7 +18,8 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private TMP_Text regionVotesProduction;
     [SerializeField] private TMP_Text regionMoneyProduction;
     [SerializeField] private Button startActivityButton;
-    [SerializeField] private Button upgradeActivityButton;
+    [SerializeField] private Button buffActivityButton;
+    [SerializeField] private Button nerfActivityButton;
     private List<int> unusableActivities;
     private int selectedRegion;
     private bool readyToStart;
@@ -86,8 +87,13 @@ public class GameMapManager : MonoBehaviour
     public void SelectRegion(int index)
     {
         startActivityButton.interactable = !unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
-        upgradeActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 1000;
+        buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 1000;
+        nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 1000;
         regionName.text = RegionsManager.regions[index].GetName();
+        regionVotesProduction.text = RegionsManager.regions[index].GetVotesRate().ToString();
+        regionMoneyProduction.text = RegionsManager.regions[index].GetMoneyRate().ToString();
+        regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString();
+        regionUpgradeCost.text = (1000).ToString();
         selectedRegion = index;
         regionTab.SetActive(true);
     }
@@ -117,7 +123,8 @@ public class GameMapManager : MonoBehaviour
             }
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
             {
-                upgradeActivityButton.interactable = false;
+                buffActivityButton.interactable = false;
+                nerfActivityButton.interactable = false;
             }
             readyToStart = true;
         }
@@ -136,7 +143,8 @@ public class GameMapManager : MonoBehaviour
             }
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 1000)
             {
-                upgradeActivityButton.interactable = false;
+                buffActivityButton.interactable = false;
+                nerfActivityButton.interactable= false;
             }
             readyToUpgrade = true;
         }
