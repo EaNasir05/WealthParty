@@ -8,12 +8,12 @@ public class RoundStartManager : MonoBehaviour
 {
     [SerializeField] private GameObject turnsOrder; //Tabella che mostra l'ordine dei giocatori nel prossimo round
     [SerializeField] private GameObject title; //Dai che lo sai...
-    [SerializeField] private GameObject round; //Scritta che indica quale round sta per iniziare
+    [SerializeField] private GameObject roundTitle; //Scritta che indica quale round sta per iniziare
     [SerializeField] private GameObject continueButton; //Bottone da premere per vedere il "turnsOrder"
 
     private void Awake()
     {
-        round.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
+        roundTitle.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
         GameManager.instance.OnRoundStart();
         for (int i = 0; i < 4; i++)
         {
@@ -24,7 +24,7 @@ public class RoundStartManager : MonoBehaviour
 
     public void ShowNewTurnsOrder() //Mostra "turnsOrder"
     {
-        round.SetActive(false);
+        roundTitle.SetActive(false);
         continueButton.SetActive(false);
         title.SetActive(true);
         turnsOrder.SetActive(true);

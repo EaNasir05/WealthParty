@@ -32,6 +32,7 @@ public class GameManager
     //Metodi usati per ottenere da altri script valori di attributi privati
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
+    public int GetWinner() { return winner; }
     public bool IsOperative() { return operative; }
 
     //Metodi usati per cambiare da altri script valori di attributi privati
@@ -46,19 +47,28 @@ public class GameManager
         ResetUsedActivities();
         foreach (Player player in PlayersManager.players)
         {
-            if (player.GetMoney() < 2000)
+            if (player.GetMoney() < 3000)
             {
-                player.AddMoney(2000 - player.GetMoney());
+                player.AddMoney(3000 - player.GetMoney());
             }
         }
     }
 
-    public void OnRoundEnd() //Insieme di metodi svolgere al termine di un round
+    public List<Dictionary<string, int>> OnRoundEnd() //Insieme di metodi svolgere al termine di un round
     {
+        List<Dictionary<string, int>> list = new();
         foreach (int[] upgrade in regionsUpgrades)
         {
+            Dictionary<string, int> dic = new()
+            {
+                { "region", upgrade[0] },
+                { "oldMoneyRate", RegionsManager.regions[upgrade[0]].GetMoneyRate() },
+                { "oldVotesRate", RegionsManager.regions[upgrade[0]].GetVotesRate() }
+            };
             RegionsManager.regions[upgrade[0]].ChangeLevel(upgrade[1]);
+            list.Add(dic);
         }
+        return list;
     }
 
     public void OnTurnStart() //Insieme di metodi svolgere all'inizio di un turno

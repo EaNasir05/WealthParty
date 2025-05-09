@@ -379,7 +379,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnsOrder: {fileID: 604366619}
   title: {fileID: 125414004}
-  round: {fileID: 865387843}
+  roundTitle: {fileID: 865387843}
   continueButton: {fileID: 158201284}
 --- !u!1 &125414004
 GameObject:
