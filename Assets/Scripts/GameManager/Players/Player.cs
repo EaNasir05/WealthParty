@@ -15,7 +15,7 @@ public class Player
 
     public void ResetStats() //Assegna le statistiche iniziali al giocatore
     {
-        money = 3000;
+        money = 0;
         votes = 0;
     }
 

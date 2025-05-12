@@ -47,10 +47,7 @@ public class GameManager
         ResetUsedActivities();
         foreach (Player player in PlayersManager.players)
         {
-            if (player.GetMoney() < 3000)
-            {
-                player.AddMoney(3000 - player.GetMoney());
-            }
+            player.AddMoney(3000);
         }
     }
 
@@ -109,7 +106,7 @@ public class GameManager
 
     public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer" e aggiunge un investimento a "regionsUpgrades"
     {
-        PlayersManager.players[currentPlayer].AddMoney(-1000);
+        PlayersManager.players[currentPlayer].AddMoney(-500);
         int region = -1;
         for (int i = 0; i < regionsUpgrades.Count; i++)
         {

@@ -29,22 +29,22 @@ public class RegionsManager
     {
         switch (index) {
             case 0:
-                regions[index].ResetStats("ABRUZZO", 500, 1500, 1000);
+                regions[index].ResetStats("ABRUZZO", 500, 1500, 750);
                 break;
             case 1:
-                regions[index].ResetStats("CAMPANIA", 750, 2250, 1500);
+                regions[index].ResetStats("CAMPANIA", 750, 2250, 1125);
                 break;
             case 2:
-                regions[index].ResetStats("PUGLIA", 1000, 3000, 2000);
+                regions[index].ResetStats("PUGLIA", 1000, 3000, 1500);
                 break;
             case 3:
-                regions[index].ResetStats("BASILICATA", 1250, 3750, 2500);
+                regions[index].ResetStats("BASILICATA", 1250, 3750, 1875);
                 break;
             case 4:
-                regions[index].ResetStats("CALABRIA", 1500, 4500, 3000);
+                regions[index].ResetStats("CALABRIA", 1500, 4500, 2250);
                 break;
             case 5:
-                regions[index].ResetStats("SICILIA", 1750, 5250, 3500);
+                regions[index].ResetStats("SICILIA", 1750, 5250, 2625);
                 break;
             default:
                 break;
