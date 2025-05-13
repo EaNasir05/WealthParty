@@ -13,7 +13,14 @@ public class RoundStartManager : MonoBehaviour
 
     private void Awake()
     {
-        roundTitle.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
+        if (!GameManager.instance.IsLastRound())
+        {
+            roundTitle.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
+        }
+        else
+        {
+            roundTitle.GetComponent<TMP_Text>().text = "ULTIMO ROUND";
+        }
         GameManager.instance.OnRoundStart();
         for (int i = 0; i < 4; i++)
         {

@@ -11,9 +11,10 @@ public class GameManager
     private int winner; //Indice che indica il giocatore nella lista del "PlayersManager" che ha vinto la partita
     private List<int[]> nextTurnOrder; //Lista che contiene i giocatori che hanno giocato questo round e i rispettivi voti che hanno guadagnato in questo round
     private List<int[]> regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
-    private int[] activitiesIncomes; //Voti e denaro che il "currentPlayer" ha guadagnato tramite attività regionali
+    private int activitiesIncomes; //Voti e denaro che il "currentPlayer" ha guadagnato tramite attività regionali
     private List<int> usedActivities; //Attività regionali che gli altri giocatori hanno già usato in questo round
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
+    private bool lastRound; //Se è l'ultimo round è true
 
     public GameManager() //Istanzia il GameManager
     {
@@ -21,10 +22,10 @@ public class GameManager
         {
             instance = this;
             round = 1;
+            lastRound = false;
             currentPlayer = 0;
             nextTurnOrder = new List<int[]>();
             regionsUpgrades = new List<int[]>();
-            activitiesIncomes = new int[2];
             usedActivities = new List<int>();
         }
     }
@@ -33,6 +34,7 @@ public class GameManager
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
     public int GetWinner() { return winner; }
+    public bool IsLastRound() { return lastRound; }
     public bool IsOperative() { return operative; }
 
     //Metodi usati per cambiare da altri script valori di attributi privati
@@ -59,8 +61,7 @@ public class GameManager
             Dictionary<string, int> dic = new()
             {
                 { "region", upgrade[0] },
-                { "oldMoneyRate", RegionsManager.regions[upgrade[0]].GetMoneyRate() },
-                { "oldVotesRate", RegionsManager.regions[upgrade[0]].GetVotesRate() }
+                { "oldVotesRate", RegionsManager.regions[upgrade[0]].GetCurrentVotesRate() }
             };
             RegionsManager.regions[upgrade[0]].ChangeLevel(upgrade[1]);
             list.Add(dic);
@@ -70,8 +71,7 @@ public class GameManager
 
     public void OnTurnStart() //Insieme di metodi svolgere all'inizio di un turno
     {
-        activitiesIncomes[0] = 0;
-        activitiesIncomes[1] = 0;
+        activitiesIncomes = 0;
         int[] temp = { currentPlayer, 0 };
         nextTurnOrder.Add(temp);
         usedActivity = -1;
@@ -79,8 +79,7 @@ public class GameManager
 
     public void OnTurnEnd() //Insieme di metodi svolgere alla fine di un turno
     {
-        AddMoney(activitiesIncomes[0]);
-        AddVotes(activitiesIncomes[1]);
+        AddVotes(activitiesIncomes);
         if (usedActivity != -1)
         {
             usedActivities.Add(usedActivity);
@@ -90,8 +89,7 @@ public class GameManager
     public void UseRegion(int index)  //Attività regionale: vengono sottratti soldi al "currentPlayer" e aggiunte risorse ad "activitiesIncomes"
     {
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
-        activitiesIncomes[0] += RegionsManager.regions[index].GetMoneyRate();
-        activitiesIncomes[1] += RegionsManager.regions[index].GetVotesRate();
+        activitiesIncomes += RegionsManager.regions[index].GetCurrentVotesRate();
         usedActivity = index;
     }
 
@@ -125,6 +123,23 @@ public class GameManager
         {
             regionsUpgrades[region][1] += value;
         }
+    }
+
+    public bool GotAnyUpdates()
+    {
+        int count = 0;
+        for (int i = 0; i < regionsUpgrades.Count; i++)
+        {
+            if (regionsUpgrades[i][1] == 0)
+            {
+                count++;
+            }
+        }
+        if (regionsUpgrades.Count - count == 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     public void AddVotes(int value) //Modifica la quantità di voti del "currentPlayer", e tiene il conto dei voti guadagnati in questo turno per calcolare il prossimo ordine dei turni
@@ -192,26 +207,62 @@ public class GameManager
     public void ChangeTurn() //Fine del turno del "currentPlayer": o inizia un altro turno, o finisce il round, o finisce la partita
     {
         OnTurnEnd();
-        if (PlayersManager.players[currentPlayer].GetVotes() >= 30000)
+        SortNextTurnOrder();
+        if (currentPlayer + 1 == PlayersManager.players.Count)
         {
-            winner = currentPlayer;
-            SceneManager.LoadScene("Victory");
-        }
-        else
-        {
-            SortNextTurnOrder();
-            if (currentPlayer + 1 == PlayersManager.players.Count)
+            if (lastRound)
             {
-                round++;
-                operative = true;
-                SceneManager.LoadScene("RoundEnd");
+                FindTheWinner();
+                SceneManager.LoadScene("Victory");
             }
             else
             {
-                currentPlayer++;
+                round++;
+                if (SomeoneIsWinning())
+                {
+                    lastRound = true;
+                }
                 operative = true;
-                SceneManager.LoadScene("TurnStart");
+                SceneManager.LoadScene("RoundEnd");
             }
         }
+        else
+        {
+            currentPlayer++;
+            operative = true;
+            SceneManager.LoadScene("TurnStart");
+        }
+    }
+
+    private bool SomeoneIsWinning() //Controlla se qualcuno ha raggiunto 30000 voti
+    {
+        foreach (Player player in PlayersManager.players)
+        {
+            if (player.GetVotes() >= 30000)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void FindTheWinner() //Trova il vincitore
+    {
+        int player = 0;
+        for (int i = 1; i < 4; i++)
+        {
+            if (PlayersManager.players[player].GetVotes() < PlayersManager.players[i].GetVotes())
+            {
+                player = i;
+            }
+            else if (PlayersManager.players[player].GetVotes() == PlayersManager.players[i].GetVotes())
+            {
+                if (PlayersManager.players[player].GetMoney() < PlayersManager.players[i].GetMoney())
+                {
+                    player = i;
+                }
+            }
+        }
+        winner = player;
     }
 }

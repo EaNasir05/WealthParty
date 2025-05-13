@@ -27,24 +27,25 @@ public class RegionsManager
 
     private static void ResetRegionStats(int index) //Resetta le statistiche delle regioni
     {
-        switch (index) {
+        switch (index)
+        {
             case 0:
-                regions[index].ResetStats("ABRUZZO", 500, 1500, 750);
+                regions[index].ResetStats("ABRUZZO", 500, 1000);
                 break;
             case 1:
-                regions[index].ResetStats("CAMPANIA", 750, 2250, 1125);
+                regions[index].ResetStats("CAMPANIA", 750, 1500);
                 break;
             case 2:
-                regions[index].ResetStats("PUGLIA", 1000, 3000, 1500);
+                regions[index].ResetStats("PUGLIA", 1000, 2000);
                 break;
             case 3:
-                regions[index].ResetStats("BASILICATA", 1250, 3750, 1875);
+                regions[index].ResetStats("BASILICATA", 1250, 2500);
                 break;
             case 4:
-                regions[index].ResetStats("CALABRIA", 1500, 4500, 2250);
+                regions[index].ResetStats("CALABRIA", 1500, 3000);
                 break;
             case 5:
-                regions[index].ResetStats("SICILIA", 1750, 5250, 2625);
+                regions[index].ResetStats("SICILIA", 1750, 3500);
                 break;
             default:
                 break;

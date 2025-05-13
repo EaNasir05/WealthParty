@@ -16,7 +16,6 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionUpgradeCost; //Costo dell'investimento nella "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionVotesProduction; //Produzione di voti dell'attività regionale della "selectedRegion" nella "regionTab"
-    [SerializeField] private TMP_Text regionMoneyProduction; //Produzione di denaro dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
@@ -89,10 +88,9 @@ public class GameMapManager : MonoBehaviour
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500;
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500;
         regionName.text = RegionsManager.regions[index].GetName();
-        regionVotesProduction.text = RegionsManager.regions[index].GetVotesRate().ToString();
-        regionMoneyProduction.text = RegionsManager.regions[index].GetMoneyRate().ToString();
+        regionVotesProduction.text = RegionsManager.regions[index].GetCurrentVotesRate().ToString();
         regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
-        regionUpgradeCost.text = (500).ToString() + "€";
+        regionUpgradeCost.text = 500.ToString() + "€";
         selectedRegion = index;
         regionTab.SetActive(true);
     }
