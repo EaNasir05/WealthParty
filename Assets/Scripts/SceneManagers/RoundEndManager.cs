@@ -58,11 +58,12 @@ public class RoundEndManager : MonoBehaviour
         List<Dictionary<string, int>> list = GameManager.instance.OnRoundEnd();
         for (int i = 0; i < list.Count; i++)
         {
-            if (list[i]["oldVotesRate"] != RegionsManager.regions[list[i]["region"]].GetCurrentVotesRate())
+            int[] production = RegionsManager.regions[list[i]["region"]].GetCurrentVotesRate();
+            if (list[i]["oldVotesRate1"] != production[0])
             {
                 regionsInfo[i].transform.GetChild(0).GetComponent<TMP_Text>().text = RegionsManager.regions[list[i]["region"]].GetName();
-                regionsInfo[i].transform.GetChild(1).GetComponent<TMP_Text>().text = list[i]["oldVotesRate"].ToString() + "V";
-                regionsInfo[i].transform.GetChild(2).GetComponent<TMP_Text>().text = RegionsManager.regions[list[i]["region"]].GetCurrentVotesRate().ToString() + "V";
+                regionsInfo[i].transform.GetChild(1).GetComponent<TMP_Text>().text = list[i]["oldVotesRate1"] + " - " + list[i]["oldVotesRate2"];
+                regionsInfo[i].transform.GetChild(2).GetComponent<TMP_Text>().text = production[0] + " - " + production[1];
                 regionsInfo[i].SetActive(true);
             }
         }

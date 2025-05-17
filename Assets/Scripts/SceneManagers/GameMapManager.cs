@@ -85,13 +85,28 @@ public class GameMapManager : MonoBehaviour
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
         startActivityButton.interactable = !unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
-        buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500;
-        nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500;
+        buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
+        nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
         regionName.text = RegionsManager.regions[index].GetName();
-        regionVotesProduction.text = RegionsManager.regions[index].GetCurrentVotesRate().ToString();
+        int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
+        regionVotesProduction.text = production[0] + " - " + production[1];
         regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
         regionUpgradeCost.text = 500.ToString() + "€";
         selectedRegion = index;
+        int level = RegionsManager.regions[index].GetLevel();
+        if (level > 0)
+        {
+            for (int i = 0; i < level; i++)
+            {
+                Debug.Log("Colora pallino verde " + i);
+            }
+        }else if (level < 0)
+        {
+            for (int i = 0; i < level * -1; i++)
+            {
+                Debug.Log("Colora pallino rosso " + i);
+            }
+        }
         regionTab.SetActive(true);
     }
 
@@ -118,11 +133,8 @@ public class GameMapManager : MonoBehaviour
             {
                 startActivityButton.interactable = false;
             }
-            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 500)
-            {
-                buffActivityButton.interactable = false;
-                nerfActivityButton.interactable = false;
-            }
+            buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, 1);
+            nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, -1);
             readyToStart = true;
         }
     }
@@ -138,11 +150,8 @@ public class GameMapManager : MonoBehaviour
             {
                 startActivityButton.interactable = false;
             }
-            if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < 500)
-            {
-                buffActivityButton.interactable = false;
-                nerfActivityButton.interactable= false;
-            }
+            buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, 1);
+            nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, -1);
             readyToUpgrade = true;
         }
     }
