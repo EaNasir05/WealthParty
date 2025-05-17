@@ -12,7 +12,8 @@ public class GameManager
     private List<int[]> nextTurnOrder; //Lista che contiene i giocatori che hanno giocato questo round e i rispettivi voti che hanno guadagnato in questo round
     private int[] regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
     private int activitiesIncomes; //Voti e denaro che il "currentPlayer" ha guadagnato tramite attività regionali
-    private List<int> usedActivities; //Attività regionali che gli altri giocatori hanno già usato in questo round
+    private int[,] activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
+    private int activityDuration; //Quanti turni il giocatore decide di occupare una regione
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
@@ -27,7 +28,7 @@ public class GameManager
             currentPlayer = 0;
             nextTurnOrder = new List<int[]>();
             regionsUpgrades = new int[6];
-            usedActivities = new List<int>();
+            activitiesState = new int[6, 2];
             upgradesOfThisTurn = new int[6];
         }
     }
@@ -44,11 +45,19 @@ public class GameManager
     public void SetCurrentPlayer(int value) { currentPlayer = value; }
     public void SetRound (int value) { round = value; }
 
+    public void OnGameStart()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            activitiesState[i, 0] = -1;
+            activitiesState[i, 1] = 0;
+        }
+    }
+
     public void OnRoundStart() //Insieme di metodi svolgere all'inizio di un round
     {
         ChangeTurnsOrder();
         SetCurrentPlayer(0);
-        ResetUsedActivities();
         foreach (Player player in PlayersManager.players)
         {
             player.AddMoney(3000);
@@ -56,6 +65,15 @@ public class GameManager
         for (int i = 0; i < 6; i++)
         {
             regionsUpgrades[i] = 0;
+            if (activitiesState[i, 1] > 1)
+            {
+                activitiesState[i, 1]--;
+            }
+            else
+            {
+                activitiesState[i, 0] = -1;
+                activitiesState[i, 1] = 0;
+            }
         }
     }
 
@@ -86,6 +104,12 @@ public class GameManager
         for (int i = 0; i < 6; i++)
         {
             upgradesOfThisTurn[i] = 0;
+            if (activitiesState[i, 0] == currentPlayer)
+            {
+                int[] production = RegionsManager.regions[i].GetCurrentVotesRate();
+                activitiesIncomes += Random.Range(production[0], production[1] + 1);
+                usedActivity = i;
+            }
         }
     }
 
@@ -94,25 +118,32 @@ public class GameManager
         AddVotes(activitiesIncomes);
         if (usedActivity != -1)
         {
-            usedActivities.Add(usedActivity);
+            activitiesState[usedActivity, 0] = currentPlayer;
+            activitiesState[usedActivity, 1] = activityDuration;
         }
     }
 
-    public void UseRegion(int index)  //Attività regionale: vengono sottratti soldi al "currentPlayer" e aggiunte risorse ad "activitiesIncomes"
+    public void UseRegion(int index, int duration)  //Attività regionale: vengono sottratti soldi al "currentPlayer" e aggiunte risorse ad "activitiesIncomes"
     {
-        int[] rate = RegionsManager.regions[index].GetCurrentVotesRate();
+        int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
-        activitiesIncomes += Random.Range(rate[0], rate[1] + 1);
+        activitiesIncomes += Random.Range(production[0], production[1] + 1);
         usedActivity = index;
+        activityDuration = duration;
     }
 
     public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
     {
-        if (usedActivities.Contains(index))
+        if (activitiesState[index, 0] != -1)
         {
             return false;
         }
         return true;
+    }
+
+    public int GetPlayerOnRegion(int index)
+    {
+        return activitiesState[index, 0];
     }
 
     public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer" e aggiunge un investimento a "regionsUpgrades"
@@ -184,11 +215,6 @@ public class GameManager
     private void ResetNextTurnOrder() //Svuota "nextTurnOrder"
     {
         nextTurnOrder?.Clear();
-    }
-
-    private void ResetUsedActivities() //Svuota "usedActivities"
-    {
-        usedActivities?.Clear();
     }
 
     private void ChangeTurnsOrder() //Cambia l'ordine dei turni del prossimo round

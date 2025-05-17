@@ -120,7 +120,7 @@ public class GameMapManager : MonoBehaviour
         if (readyToStart)
         {
             readyToStart = false;
-            GameManager.instance.UseRegion(selectedRegion);
+            GameManager.instance.UseRegion(selectedRegion, 1);
             UpdatePlayersStats();
             for (int i = 0; i < 6; i++)
             {

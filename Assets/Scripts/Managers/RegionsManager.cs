@@ -46,7 +46,7 @@ public class Region
         level += value;
         if (level < -5) { level = -5; }
         if (level > 5) { level = 5; }
-        currentVotesRate = votesRate + (int)(votesRate * 0.2 * level);
+        currentVotesRate = votesRate + (int)(votesRate * 0.15 * level);
     }
 }
 
