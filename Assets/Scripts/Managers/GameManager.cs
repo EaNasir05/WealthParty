@@ -48,6 +48,11 @@ public class GameManager
         round = 1;
         lastRound = false;
         currentPlayer = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            activitiesState[i, 0] = -1;
+            activitiesState[i, 1] = 0;
+        }
     }
 
     //Metodi usati per ottenere da altri script valori di attributi privati
@@ -76,7 +81,10 @@ public class GameManager
     {
         ChangeTurnsOrder();
         drawnTasks?.Clear();
-        UpdateWorstRegions();
+        if (round > 1)
+        {
+            UpdateWorstRegions();
+        }
         currentPlayer = 0;
         foreach (Player player in PlayersManager.players)
         {
@@ -117,7 +125,10 @@ public class GameManager
 
     public void OnTurnStart() //Insieme di metodi da svolgere all'inizio di un turno
     {
-        DrawNewTask();
+        if (round > 1)
+        {
+            DrawNewTask();
+        }
         activitiesIncomes = 0;
         tasksIncomes = 0;
         int[] temp = { currentPlayer, 0 };
@@ -182,7 +193,7 @@ public class GameManager
     {
         List<int> drawableTasks = GetDrawableTasks();
         int drawn = Random.Range(0, drawableTasks.Count);
-        drawnTasks.Add(new DrawnTask(drawn));
+        drawnTasks.Add(new DrawnTask(drawableTasks[drawn]));
     }
 
     private List<int> GetDrawableTasks() //Sceglie quali task possono essere estratte

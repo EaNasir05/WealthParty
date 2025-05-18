@@ -129,6 +129,11 @@ public class GameMapManager : MonoBehaviour
             if (!drawnTasks[i].completed)
             {
                 tasksNames[i].text = TasksManager.tasks[drawnTasks[i].task].GetName();
+                tasksNames[i].gameObject.transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                tasksNames[i].gameObject.transform.parent.gameObject.SetActive(false);
             }
         }
         tasksTab.SetActive(true);
