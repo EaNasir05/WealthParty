@@ -9,6 +9,7 @@ public class MainMenuManager : MonoBehaviour
     {
         PlayersManager.Awake();
         RegionsManager.Awake();
+        TasksManager.Awake();
         new GameManager();
     }
 

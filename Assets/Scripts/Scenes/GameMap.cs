@@ -11,6 +11,11 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private GameObject[] thirdPlayerInfo; //Informazioni stampate a schermo di un giocatore
     [SerializeField] private GameObject[] fourthPlayerInfo; //Informazioni stampate a schermo di un giocatore
     [SerializeField] private GameObject playersTab; //Scheda che contiene "secondPlayerInfo", "thirdPlayerInfo", "fourthPlayerInfo"
+    [SerializeField] private GameObject tasksTab; //Scheda che contiene le task estratte in questo round;
+    [SerializeField] private TMP_Text[] tasksNames;
+    [SerializeField] private GameObject taskInfoTab;
+    [SerializeField] private TMP_Text[] taskInfo;
+    [SerializeField] private Button goToRegionButton;
     [SerializeField] private GameObject regionTab; //Scheda che contiene le statistiche della "selectedRegion", e i pulsanti per svolgere la sua attività regionale e per investirci
     [SerializeField] private TMP_Text regionName; //Nome della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
@@ -84,6 +89,7 @@ public class GameMapManager : MonoBehaviour
 
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
+        taskInfoTab.SetActive(false);
         startActivityButton.interactable = !unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
@@ -113,6 +119,42 @@ public class GameMapManager : MonoBehaviour
     public void HideRegionTab() //Nasconde la regionTab
     {
         regionTab.SetActive(false);
+    }
+
+    public void ShowTasksList()
+    {
+        List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
+        for (int i = 0; i < drawnTasks.Count; i++)
+        {
+            if (!drawnTasks[i].completed)
+            {
+                tasksNames[i].text = TasksManager.tasks[drawnTasks[i].task].GetName();
+            }
+        }
+        tasksTab.SetActive(true);
+    }
+
+    public void HideTasksList()
+    {
+        tasksTab.SetActive(false);
+    }
+
+    public void ShowTaskInfo(int index)
+    {
+        tasksTab.SetActive(false);
+        List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
+        taskInfo[0].text = TasksManager.tasks[drawnTasks[index].task].GetName();
+        taskInfo[1].text = TasksManager.tasks[drawnTasks[index].task].GetMoney() + "€";
+        taskInfo[2].text = TasksManager.tasks[drawnTasks[index].task].GetDescription();
+        goToRegionButton.onClick.RemoveAllListeners();
+        goToRegionButton.onClick.AddListener(() => SelectRegion(TasksManager.tasks[drawnTasks[index].task].GetRegion()));
+        taskInfoTab.SetActive(true);
+    }
+
+    public void HideTaskInfo()
+    {
+        taskInfoTab.SetActive(false);
+        tasksTab.SetActive(true);
     }
 
     public void StartActivity() //Svolge l'attività regionale della "selectedRegion" e aggiorna i dati dei giocatori e della "regionTab"

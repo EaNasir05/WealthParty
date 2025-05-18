@@ -1,6 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
+
+public class DrawnTask
+{
+    public int task;
+    public bool completed;
+
+    public DrawnTask(int task)
+    {
+        this.task = task;
+        completed = false;
+    }
+}
 
 public class GameManager
 {
@@ -9,11 +22,13 @@ public class GameManager
     private int currentPlayer; //Indice del giocatore nella lista del "PlayersManager" che sta attualmente giocando il suo turno
     private bool operative; //Non ti interessa...
     private int winner; //Indice che indica il giocatore nella lista del "PlayersManager" che ha vinto la partita
+    private List<int> worstRegions; //Lista delle 3 regioni meno produttive
+    private List<DrawnTask> drawnTasks; //Lista delle task estratte nel round
     private List<int[]> nextTurnOrder; //Lista che contiene i giocatori che hanno giocato questo round e i rispettivi voti che hanno guadagnato in questo round
     private int[] regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
-    private int activitiesIncomes; //Voti e denaro che il "currentPlayer" ha guadagnato tramite attività regionali
+    private int activitiesIncomes; //Voti che il "currentPlayer" ha guadagnato tramite attività regionali
+    private int tasksIncomes; //Denaro che il "currentPlayer" ha guadagnato tramite le tasks
     private int[,] activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
-    private int activityDuration; //Quanti turni il giocatore decide di occupare una regione
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
@@ -23,20 +38,23 @@ public class GameManager
         if (instance == null)
         {
             instance = this;
-            round = 1;
-            lastRound = false;
-            currentPlayer = 0;
             nextTurnOrder = new List<int[]>();
+            drawnTasks = new List<DrawnTask>();
+            worstRegions = new List<int>();
             regionsUpgrades = new int[6];
             activitiesState = new int[6, 2];
             upgradesOfThisTurn = new int[6];
         }
+        round = 1;
+        lastRound = false;
+        currentPlayer = 0;
     }
 
     //Metodi usati per ottenere da altri script valori di attributi privati
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
     public int GetWinner() { return winner; }
+    public List<DrawnTask> GetDrawnTasks() { return drawnTasks; }
     public bool IsLastRound() { return lastRound; }
     public bool IsOperative() { return operative; }
 
@@ -57,7 +75,9 @@ public class GameManager
     public void OnRoundStart() //Insieme di metodi svolgere all'inizio di un round
     {
         ChangeTurnsOrder();
-        SetCurrentPlayer(0);
+        drawnTasks?.Clear();
+        UpdateWorstRegions();
+        currentPlayer = 0;
         foreach (Player player in PlayersManager.players)
         {
             player.AddMoney(3000);
@@ -97,7 +117,9 @@ public class GameManager
 
     public void OnTurnStart() //Insieme di metodi da svolgere all'inizio di un turno
     {
+        DrawNewTask();
         activitiesIncomes = 0;
+        tasksIncomes = 0;
         int[] temp = { currentPlayer, 0 };
         nextTurnOrder.Add(temp);
         usedActivity = -1;
@@ -116,20 +138,108 @@ public class GameManager
     public void OnTurnEnd() //Insieme di metodi svolgere alla fine di un turno
     {
         AddVotes(activitiesIncomes);
-        if (usedActivity != -1)
+        AddMoney(tasksIncomes);
+    }
+
+    private void UpdateWorstRegions() //Aggiorna "worstRegions"
+    {
+        worstRegions?.Clear();
+        for (int i = 0; i < RegionsManager.regions.Count; i++)
         {
-            activitiesState[usedActivity, 0] = currentPlayer;
-            activitiesState[usedActivity, 1] = activityDuration;
+            if (worstRegions.Count < 3)
+            {
+                worstRegions.Add(i);
+            }
+            else
+            {
+                int best = GetTheBestWorstRegion();
+                if (RegionsManager.regions[i].GetLevel() < RegionsManager.regions[worstRegions[best]].GetLevel())
+                {
+                    worstRegions[best] = i;
+                }
+            }
         }
     }
 
-    public void UseRegion(int index, int duration)  //Attività regionale: vengono sottratti soldi al "currentPlayer" e aggiunte risorse ad "activitiesIncomes"
+    private int GetTheBestWorstRegion() //Ritorna l'indice della regione più produttiva in "worstRegions"
+    {
+        int best = -1;
+        for (int i = 0; i < worstRegions.Count; i++)
+        {
+            if (best == -1)
+            {
+                best = i;
+            }
+            else if (RegionsManager.regions[worstRegions[i]].GetLevel() > RegionsManager.regions[worstRegions[best]].GetLevel())
+            {
+                best = i;
+            }
+        }
+        return best;
+    }
+
+    private void DrawNewTask() //Estrae una nuova task
+    {
+        List<int> drawableTasks = GetDrawableTasks();
+        int drawn = Random.Range(0, drawableTasks.Count);
+        drawnTasks.Add(new DrawnTask(drawn));
+    }
+
+    private List<int> GetDrawableTasks() //Sceglie quali task possono essere estratte
+    {
+        List<int> drawableTasks = new List<int>();
+        for (int x = 0; x < 12; x++)
+        {
+            if (worstRegions.Contains(TasksManager.tasks[x].GetRegion()))
+            {
+                bool wasDrawn = false;
+                for (int y = 0; y < drawnTasks.Count; y++)
+                {
+                    if (drawnTasks[y].task == x)
+                    {
+                        wasDrawn = true;
+                    }
+                }
+                if (!wasDrawn)
+                {
+                    drawableTasks.Add(x);
+                }
+            }
+        }
+        return drawableTasks;
+    }
+
+    private int FindCompletedTask(int region, int action) //Controlla se è stata completata una task eseguendo una certa azione su una regione
+    {
+        for (int i = 0; i < drawnTasks.Count; i++)
+        {
+            if (TasksManager.tasks[drawnTasks[i].task].GetRegion() == region && TasksManager.tasks[drawnTasks[i].task].GetAction() == action && !drawnTasks[i].completed)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void UseRegion(int index, int duration) //Attività regionale: vengono sottratti soldi al "currentPlayer", aggiunti voti ad "activitiesIncomes", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
         int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
         activitiesIncomes += Random.Range(production[0], production[1] + 1);
         usedActivity = index;
-        activityDuration = duration;
+        if (activitiesState[usedActivity, 1] < duration)
+        {
+            activitiesState[usedActivity, 0] = currentPlayer;
+            activitiesState[usedActivity, 1] = duration;
+        }
+        int completedTask = FindCompletedTask(index, 0);
+        if (completedTask != -1)
+        {
+            drawnTasks[completedTask].completed = true;
+            tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+            //Avvia animazione task completata
+            Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+        }
     }
 
     public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
@@ -141,19 +251,30 @@ public class GameManager
         return true;
     }
 
-    public int GetPlayerOnRegion(int index)
+    public int GetPlayerOnRegion(int index) //Ritorna l'indice del player che sta usando una regione
     {
         return activitiesState[index, 0];
     }
 
-    public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer" e aggiunge un investimento a "regionsUpgrades"
+    public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer", aggiunge un investimento o un sabotaggio a "regionsUpgrades", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
         PlayersManager.players[currentPlayer].AddMoney(-500);
         upgradesOfThisTurn[index] += value;
         regionsUpgrades[index] += value;
+        if (value == 1)
+        {
+            int completedTask = FindCompletedTask(index, 1);
+            if (completedTask != -1)
+            {
+                drawnTasks[completedTask].completed = true;
+                tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                //Avvia animazione task completata
+                Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+            }
+        }
     }
 
-    public bool IsUpgradable(int region, int value)
+    public bool IsUpgradable(int region, int value) //Ritorna true se è possibile usare altri investimenti/sabotaggi
     {
         if (RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value > 5 || RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value < -5)
         {
@@ -162,7 +283,7 @@ public class GameManager
         return true;
     }
 
-    public bool GotAnyUpdates()
+    public bool GotAnyUpdates() //Ritorna true se il livello di produzione di almeno una regione è cambiato
     {
         int count = 0;
         for (int i = 0; i < regionsUpgrades.Length; i++)
@@ -212,11 +333,6 @@ public class GameManager
         }
     }
 
-    private void ResetNextTurnOrder() //Svuota "nextTurnOrder"
-    {
-        nextTurnOrder?.Clear();
-    }
-
     private void ChangeTurnsOrder() //Cambia l'ordine dei turni del prossimo round
     {
         if (round == 1)
@@ -227,7 +343,7 @@ public class GameManager
         {
             PlayersManager.ChangePlayersOrder(nextTurnOrder[0][0], nextTurnOrder[1][0], nextTurnOrder[2][0], nextTurnOrder[3][0]);
         }
-        ResetNextTurnOrder();
+        nextTurnOrder?.Clear();
     }
 
     public void ChangeTurn() //Fine del turno del "currentPlayer": o inizia un altro turno, o finisce il round, o finisce la partita
