@@ -255,7 +255,7 @@ public class GameManager
 
     public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
     {
-        if (activitiesState[index, 0] != -1)
+        if (activitiesState[index, 0] != -1 && activitiesState[index, 0] != currentPlayer)
         {
             return false;
         }
