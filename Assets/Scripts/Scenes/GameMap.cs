@@ -12,15 +12,17 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private GameObject[] fourthPlayerInfo; //Informazioni stampate a schermo di un giocatore
     [SerializeField] private GameObject playersTab; //Scheda che contiene "secondPlayerInfo", "thirdPlayerInfo", "fourthPlayerInfo"
     [SerializeField] private GameObject tasksTab; //Scheda che contiene le task estratte in questo round;
-    [SerializeField] private TMP_Text[] tasksNames;
-    [SerializeField] private GameObject taskInfoTab;
-    [SerializeField] private TMP_Text[] taskInfo;
-    [SerializeField] private Button goToRegionButton;
+    [SerializeField] private TMP_Text[] tasksNames; //Nomi delle attività stampati nella "tasksTab"
+    [SerializeField] private GameObject taskInfoTab; //Finestra che contiene le informazioni di una attività
+    [SerializeField] private TMP_Text[] taskInfo; //Informazioni della task contenute in "taskInfoTab"
+    [SerializeField] private Button goToRegionButton; //Bottone nella "taskInfoTab" che ti porta alla regione della task
     [SerializeField] private GameObject regionTab; //Scheda che contiene le statistiche della "selectedRegion", e i pulsanti per svolgere la sua attività regionale e per investirci
     [SerializeField] private TMP_Text regionName; //Nome della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionUpgradeCost; //Costo dell'investimento nella "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionVotesProduction; //Produzione di voti dell'attività regionale della "selectedRegion" nella "regionTab"
+    [SerializeField] private RawImage regionPlayerIcon; //Icona del giocatore che sta occupando la regione
+    [SerializeField] private GameObject regionProductionLevel; //Immagine che rappresenta il livello di produzione della regione
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
@@ -94,23 +96,45 @@ public class GameMapManager : MonoBehaviour
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
         regionName.text = RegionsManager.regions[index].GetName();
+        int playerOnRegion = GameManager.instance.GetPlayerOnRegion(index);
+        if (playerOnRegion != -1)
+        {
+            regionPlayerIcon.gameObject.SetActive(true);
+            regionPlayerIcon.texture = PlayersManager.players[playerOnRegion].GetIcon();
+        }
+        else
+        {
+            regionPlayerIcon.gameObject.SetActive(false);
+        }
         int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
         regionVotesProduction.text = production[0] + " - " + production[1];
         regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
         regionUpgradeCost.text = 500.ToString() + "€";
         selectedRegion = index;
         int level = RegionsManager.regions[index].GetLevel();
-        if (level > 0)
+        if (level >= 0)
         {
+            int count = 0;
             for (int i = 0; i < level; i++)
             {
-                Debug.Log("Colora pallino verde " + i);
+                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.green;
+                count++;
+            }
+            for (int i = 4; i >= count; i--)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
             }
         }else if (level < 0)
         {
+            int count = 0;
             for (int i = 0; i < level * -1; i++)
             {
-                Debug.Log("Colora pallino rosso " + i);
+                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.red;
+                count++;
+            }
+            for (int i = 4; i >= count; i--)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
             }
         }
         regionTab.SetActive(true);
@@ -129,6 +153,11 @@ public class GameMapManager : MonoBehaviour
             if (!drawnTasks[i].completed)
             {
                 tasksNames[i].text = TasksManager.tasks[drawnTasks[i].task].GetName();
+                tasksNames[i].gameObject.transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                tasksNames[i].gameObject.transform.parent.gameObject.SetActive(false);
             }
         }
         tasksTab.SetActive(true);
@@ -163,6 +192,8 @@ public class GameMapManager : MonoBehaviour
         {
             readyToStart = false;
             GameManager.instance.UseRegion(selectedRegion, 1);
+            regionPlayerIcon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
+            regionPlayerIcon.gameObject.SetActive(true);
             UpdatePlayersStats();
             for (int i = 0; i < 6; i++)
             {
