@@ -75,12 +75,11 @@ public class RoundEndManager : MonoBehaviour
         {
             playersInfo[i].transform.GetChild(0).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
             playersInfo[i].transform.GetChild(1).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-            if (PlayersManager.players[i].GetVotes() >= 30000)
+            if (PlayersManager.players[i].GetVotes() >= 15000)
             {
                 playersInfo[i].transform.GetChild(2).GetComponent<TMP_Text>().color = Color.red;
             }
             playersInfo[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "V: " + PlayersManager.players[i].GetVotes().ToString();
-            playersInfo[i].transform.GetChild(3).GetComponent<TMP_Text>().text = "€: " + PlayersManager.players[i].GetMoney().ToString();
             playersInfo[i].SetActive(true);
         }
     }

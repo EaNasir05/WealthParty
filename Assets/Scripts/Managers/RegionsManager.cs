@@ -46,9 +46,9 @@ public class Region
     public void ChangeLevel(int value) //Applica gli investimenti dei giocatori
     {
         level += value;
-        if (level < -5) { level = -5; }
-        if (level > 5) { level = 5; }
-        currentVotesRate = votesRate + (int)(votesRate * 0.15 * level);
+        if (level < -4) { level = -4; }
+        if (level > 4) { level = 4; }
+        currentVotesRate = votesRate + (int)(votesRate * 0.2 * level);
     }
 }
 

@@ -16,6 +16,8 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private GameObject taskInfoTab; //Finestra che contiene le informazioni di una attività
     [SerializeField] private TMP_Text[] taskInfo; //Informazioni della task contenute in "taskInfoTab"
     [SerializeField] private Button goToRegionButton; //Bottone nella "taskInfoTab" che ti porta alla regione della task
+    [SerializeField] private GameObject activityTab; //Scheda che contiene le informazioni di una attività regionale
+    [SerializeField] private TMP_Text activityDuration; //Testo che contiene la durata della tua prossima attività
     [SerializeField] private GameObject regionTab; //Scheda che contiene le statistiche della "selectedRegion", e i pulsanti per svolgere la sua attività regionale e per investirci
     [SerializeField] private TMP_Text regionName; //Nome della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
@@ -26,14 +28,12 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
-    private List<int> unusableActivities;  //Lista che contiene le attività regionali che il "currentPlayer" non può svolgere
     private int selectedRegion; //Regione selezionata dalla mappa
     private bool readyToStart; //Booleana che previene errori si spam
     private bool readyToUpgrade; //Booleana che previene errori si spam
 
     private void Awake()
     {
-        unusableActivities = new List<int>();
         readyToStart = true;
         readyToUpgrade = true;
         UpdatePlayersStats();
@@ -41,6 +41,11 @@ public class GameMapManager : MonoBehaviour
 
     private void UpdatePlayersStats() //Aggiorna le statistiche di tutti i giocatori su schermo
     {
+        firstPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
+        firstPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName();
+        firstPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetVotes().ToString();
+        firstPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney().ToString();
+        /*
         int count = 0;
         for (int i = 0; i < 4; i++)
         {
@@ -59,24 +64,22 @@ public class GameMapManager : MonoBehaviour
                         secondPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
                         secondPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
                         secondPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        secondPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
                         break;
                     case 1:
                         thirdPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
                         thirdPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
                         thirdPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        thirdPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
                         break;
                     case 2:
                         fourthPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
                         fourthPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
                         fourthPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        fourthPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
                         break;
                 }
                 count++;
             }
         }
+        */
     }
 
     public void ShowAllPlayers() //Mostra la "playersTab"
@@ -92,15 +95,15 @@ public class GameMapManager : MonoBehaviour
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
         taskInfoTab.SetActive(false);
-        startActivityButton.interactable = !unusableActivities.Contains(index) && PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
+        startActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
         regionName.text = RegionsManager.regions[index].GetName();
-        int playerOnRegion = GameManager.instance.GetPlayerOnRegion(index);
-        if (playerOnRegion != -1)
+        Player playerOnRegion = GameManager.instance.GetPlayerOnRegion(index);
+        if (playerOnRegion != null)
         {
             regionPlayerIcon.gameObject.SetActive(true);
-            regionPlayerIcon.texture = PlayersManager.players[playerOnRegion].GetIcon();
+            regionPlayerIcon.texture = playerOnRegion.GetIcon();
         }
         else
         {
@@ -120,7 +123,7 @@ public class GameMapManager : MonoBehaviour
                 regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.green;
                 count++;
             }
-            for (int i = 4; i >= count; i--)
+            for (int i = 3; i >= count; i--)
             {
                 regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
             }
@@ -132,7 +135,7 @@ public class GameMapManager : MonoBehaviour
                 regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.red;
                 count++;
             }
-            for (int i = 4; i >= count; i--)
+            for (int i = 3; i >= count; i--)
             {
                 regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
             }
@@ -143,9 +146,17 @@ public class GameMapManager : MonoBehaviour
     public void HideRegionTab() //Nasconde la regionTab
     {
         regionTab.SetActive(false);
+        activityTab.SetActive(false);
     }
 
-    public void ShowTasksList()
+    public void ShowActivityTab()
+    {
+        activityDuration.text = "1";
+        activityTab.transform.GetChild(3).GetComponent<Button>().interactable = false;
+        activityTab.SetActive(true);
+    }
+
+    public void ShowTasksList() //Apre la "tasksTab"
     {
         List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
         for (int i = 0; i < drawnTasks.Count; i++)
@@ -163,12 +174,12 @@ public class GameMapManager : MonoBehaviour
         tasksTab.SetActive(true);
     }
 
-    public void HideTasksList()
+    public void HideTasksList() //Chiude la "tasksTab"
     {
         tasksTab.SetActive(false);
     }
 
-    public void ShowTaskInfo(int index)
+    public void ShowTaskInfo(int index) //Apre la "taskInfoTab"
     {
         tasksTab.SetActive(false);
         List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
@@ -180,7 +191,7 @@ public class GameMapManager : MonoBehaviour
         taskInfoTab.SetActive(true);
     }
 
-    public void HideTaskInfo()
+    public void HideTaskInfo() //Chiude la "taskInfoTab"
     {
         taskInfoTab.SetActive(false);
         tasksTab.SetActive(true);
@@ -191,17 +202,10 @@ public class GameMapManager : MonoBehaviour
         if (readyToStart)
         {
             readyToStart = false;
-            GameManager.instance.UseRegion(selectedRegion, 1);
+            GameManager.instance.UseRegion(selectedRegion, int.Parse(activityDuration.text));
             regionPlayerIcon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
             regionPlayerIcon.gameObject.SetActive(true);
             UpdatePlayersStats();
-            for (int i = 0; i < 6; i++)
-            {
-                if (selectedRegion != i)
-                {
-                    unusableActivities.Add(i);
-                }
-            }
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
             {
                 startActivityButton.interactable = false;
