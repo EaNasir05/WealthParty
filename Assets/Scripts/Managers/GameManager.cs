@@ -15,6 +15,18 @@ public class DrawnTask
     }
 }
 
+public class ActivitiesState
+{
+    public Player player;
+    public int duration;
+
+    public ActivitiesState(Player player, int duration)
+    {
+        this.player = player;
+        this.duration = duration;
+    }
+}
+
 public class GameManager
 {
     public static GameManager instance; //Unica istanza statica del GameManager, utilizzabile in tutti gli scripts
@@ -28,7 +40,7 @@ public class GameManager
     private int[] regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
     private int activitiesIncomes; //Voti che il "currentPlayer" ha guadagnato tramite attività regionali
     private int tasksIncomes; //Denaro che il "currentPlayer" ha guadagnato tramite le tasks
-    private int[,] activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
+    private List<List<ActivitiesState>> activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
@@ -42,7 +54,7 @@ public class GameManager
             drawnTasks = new List<DrawnTask>();
             worstRegions = new List<int>();
             regionsUpgrades = new int[6];
-            activitiesState = new int[6, 2];
+            activitiesState = new List<List<ActivitiesState>>();
             upgradesOfThisTurn = new int[6];
         }
         round = 1;
@@ -50,14 +62,14 @@ public class GameManager
         currentPlayer = 0;
         for (int i = 0; i < 6; i++)
         {
-            activitiesState[i, 0] = -1;
-            activitiesState[i, 1] = 0;
+            activitiesState.Add(new List<ActivitiesState>());
         }
     }
 
     //Metodi usati per ottenere da altri script valori di attributi privati
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
+    public int GetUsedActivity() { return usedActivity; }
     public int GetWinner() { return winner; }
     public List<DrawnTask> GetDrawnTasks() { return drawnTasks; }
     public bool IsLastRound() { return lastRound; }
@@ -72,8 +84,7 @@ public class GameManager
     {
         for (int i = 0; i < 6; i++)
         {
-            activitiesState[i, 0] = -1;
-            activitiesState[i, 1] = 0;
+            activitiesState.Add(new List<ActivitiesState>());
         }
     }
 
@@ -93,14 +104,17 @@ public class GameManager
         for (int i = 0; i < 6; i++)
         {
             regionsUpgrades[i] = 0;
-            if (activitiesState[i, 1] > 1)
+            for (int j = 0; j < activitiesState[i].Count; j++)
             {
-                activitiesState[i, 1]--;
-            }
-            else
-            {
-                activitiesState[i, 0] = -1;
-                activitiesState[i, 1] = 0;
+                if (activitiesState[i][j].duration > 1)
+                {
+                    activitiesState[i][j].duration--;
+                }
+                else
+                {
+                    activitiesState[i].Remove(activitiesState[i][j]);
+                    j--;
+                }
             }
         }
     }
@@ -137,11 +151,14 @@ public class GameManager
         for (int i = 0; i < 6; i++)
         {
             upgradesOfThisTurn[i] = 0;
-            if (activitiesState[i, 0] == currentPlayer)
+            for (int j = 0; j < activitiesState[i].Count; j++)
             {
-                int[] production = RegionsManager.regions[i].GetCurrentVotesRate();
-                activitiesIncomes += Random.Range(production[0], production[1] + 1);
-                usedActivity = i;
+                if (activitiesState[i][j].player == PlayersManager.players[currentPlayer])
+                {
+                    int[] production = RegionsManager.regions[i].GetCurrentVotesRate();
+                    activitiesIncomes += Random.Range(production[0], production[1] + 1);
+                    usedActivity = i;
+                }
             }
         }
     }
@@ -238,11 +255,7 @@ public class GameManager
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
         activitiesIncomes += Random.Range(production[0], production[1] + 1);
         usedActivity = index;
-        if (activitiesState[usedActivity, 1] < duration)
-        {
-            activitiesState[usedActivity, 0] = currentPlayer;
-            activitiesState[usedActivity, 1] = duration;
-        }
+        activitiesState[usedActivity].Add(new ActivitiesState(PlayersManager.players[currentPlayer], duration));
         int completedTask = FindCompletedTask(index, 0);
         if (completedTask != -1)
         {
@@ -255,16 +268,24 @@ public class GameManager
 
     public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
     {
-        if (activitiesState[index, 0] != -1 && activitiesState[index, 0] != currentPlayer)
+        if (activitiesState[index].Count > 0 && activitiesState[index][0].player != PlayersManager.players[currentPlayer])
+        {
+            return false;
+        }
+        if (usedActivity != -1 && usedActivity != index)
         {
             return false;
         }
         return true;
     }
 
-    public int GetPlayerOnRegion(int index) //Ritorna l'indice del player che sta usando una regione
+    public Player GetPlayerOnRegion(int index) //Ritorna l'indice del player che sta usando una regione
     {
-        return activitiesState[index, 0];
+        if (activitiesState[index].Count == 0)
+        {
+            return null;
+        }
+        return activitiesState[index][0].player;
     }
 
     public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer", aggiunge un investimento o un sabotaggio a "regionsUpgrades", ed eventualmente aggiunti soldi a "tasksIncomes"
@@ -283,11 +304,22 @@ public class GameManager
                 Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
             }
         }
+        else if (value == -1)
+        {
+            int completedTask = FindCompletedTask(index, -1);
+            if (completedTask != -1)
+            {
+                drawnTasks[completedTask].completed = true;
+                tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                //Avvia animazione task completata
+                Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+            }
+        }
     }
 
     public bool IsUpgradable(int region, int value) //Ritorna true se è possibile usare altri investimenti/sabotaggi
     {
-        if (RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value > 5 || RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value < -5)
+        if (RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value > 4 || RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region] + value < -4)
         {
             return false;
         }
@@ -391,7 +423,7 @@ public class GameManager
     {
         foreach (Player player in PlayersManager.players)
         {
-            if (player.GetVotes() >= 30000)
+            if (player.GetVotes() >= 15000)
             {
                 return true;
             }
