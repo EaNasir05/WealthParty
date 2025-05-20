@@ -2495,7 +2495,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -3238,17 +3238,14 @@ MonoBehaviour:
   - {fileID: 1184643301}
   - {fileID: 990659058}
   - {fileID: 1835605493}
-  - {fileID: 0}
   thirdPlayerInfo:
   - {fileID: 978959776}
   - {fileID: 1861466106}
   - {fileID: 755106852}
-  - {fileID: 0}
   fourthPlayerInfo:
   - {fileID: 969850232}
   - {fileID: 169329355}
   - {fileID: 658595796}
-  - {fileID: 0}
   playersTab: {fileID: 1890498910}
   tasksTab: {fileID: 1888260806}
   tasksNames:
@@ -3271,7 +3268,9 @@ MonoBehaviour:
   regionVotesProduction: {fileID: 2104479211}
   regionPlayerIcon: {fileID: 1727287104}
   regionProductionLevel: {fileID: 525701151}
-  startActivityButton: {fileID: 2117836302}
+  tasksButton: {fileID: 318476125}
+  activityButton: {fileID: 2117836302}
+  startActivityButton: {fileID: 819297731}
   buffActivityButton: {fileID: 547712765}
   nerfActivityButton: {fileID: 1789953250}
 --- !u!1 &506422739
@@ -5359,7 +5358,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -12773,7 +12772,7 @@ GameObject:
   - component: {fileID: 2117836300}
   - component: {fileID: 2117836302}
   m_Layer: 5
-  m_Name: StartActivity
+  m_Name: Activity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
