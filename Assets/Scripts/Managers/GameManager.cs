@@ -35,6 +35,7 @@ public class GameManager
     private bool operative; //Non ti interessa...
     private int winner; //Indice che indica il giocatore nella lista del "PlayersManager" che ha vinto la partita
     private List<int> worstRegions; //Lista delle 3 regioni meno produttive
+    private List<int> bestRegions; //Lista delle 3 regioni più produttive
     private List<DrawnTask> drawnTasks; //Lista delle task estratte nel round
     private List<int[]> nextTurnOrder; //Lista che contiene i giocatori che hanno giocato questo round e i rispettivi voti che hanno guadagnato in questo round
     private int[] regionsUpgrades; //Lista che contiene tutti gli investimenti di questo round
@@ -53,6 +54,7 @@ public class GameManager
             nextTurnOrder = new List<int[]>();
             drawnTasks = new List<DrawnTask>();
             worstRegions = new List<int>();
+            bestRegions = new List<int>();
             regionsUpgrades = new int[6];
             activitiesState = new List<List<ActivitiesState>>();
             upgradesOfThisTurn = new int[6];
@@ -95,6 +97,7 @@ public class GameManager
         if (round > 1)
         {
             UpdateWorstRegions();
+            UpdateBestRegions();
         }
         currentPlayer = 0;
         foreach (Player player in PlayersManager.players)
@@ -206,35 +209,98 @@ public class GameManager
         return best;
     }
 
-    private void DrawNewTask() //Estrae una nuova task
+    private void UpdateBestRegions()
     {
-        List<int> drawableTasks = GetDrawableTasks();
-        int drawn = Random.Range(0, drawableTasks.Count);
-        drawnTasks.Add(new DrawnTask(drawableTasks[drawn]));
-    }
-
-    private List<int> GetDrawableTasks() //Sceglie quali task possono essere estratte
-    {
-        List<int> drawableTasks = new List<int>();
-        for (int x = 0; x < 12; x++)
+        bestRegions?.Clear();
+        for (int i = 0; i < 6; i++)
         {
-            if (worstRegions.Contains(TasksManager.tasks[x].GetRegion()))
+            if (!worstRegions.Contains(i))
             {
-                bool wasDrawn = false;
-                for (int y = 0; y < drawnTasks.Count; y++)
-                {
-                    if (drawnTasks[y].task == x)
-                    {
-                        wasDrawn = true;
-                    }
-                }
-                if (!wasDrawn)
-                {
-                    drawableTasks.Add(x);
-                }
+                bestRegions.Add(i);
             }
         }
-        return drawableTasks;
+    }
+
+    private void DrawNewTask() //Estrae una nuova task
+    {
+        int randAction = Random.Range(1, 101);
+        int action = -1;
+        int region = -1;
+        if (randAction > 0 && randAction <= 20)
+        {
+            action = 0;
+            region = worstRegions[GetRandomBadRegion(action)];
+        }
+        else if (randAction > 20 && randAction <= 60)
+        {
+            action = 1;
+            region = worstRegions[GetRandomBadRegion(action)];
+        }
+        else if (randAction > 60 && randAction <= 100)
+        {
+            action = 2;
+            region = bestRegions[GetRandomGoodRegion(action)];
+        }
+        int randTask = GetTask(region, action);
+        drawnTasks.Add(new DrawnTask(randTask));
+    }
+
+    private int GetRandomBadRegion(int action)
+    {
+        bool available = false;
+        int region = -1;
+        while (!available)
+        {
+            region = Random.Range(0, 3);
+            bool found = false;
+            for (int i = 0; i < drawnTasks.Count; i++)
+            {
+                if (TasksManager.tasks[drawnTasks[i].task].GetRegion() == worstRegions[region] && TasksManager.tasks[drawnTasks[i].task].GetAction() == action)
+                {
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                available = true;
+            }
+        }
+        return region;
+    }
+
+    private int GetRandomGoodRegion(int action)
+    {
+        bool available = false;
+        int region = -1;
+        while (!available)
+        {
+            region = Random.Range(0, 3);
+            bool found = false;
+            for (int i = 0; i < drawnTasks.Count; i++)
+            {
+                if (TasksManager.tasks[drawnTasks[i].task].GetRegion() == bestRegions[region] && TasksManager.tasks[drawnTasks[i].task].GetAction() == action)
+                {
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                available = true;
+            }
+        }
+        return region;
+    }
+
+    private int GetTask(int region, int action)
+    {
+        for (int i = 0; i < 18; i++)
+        {
+            if (TasksManager.tasks[i].GetRegion() == region && TasksManager.tasks[i].GetAction() == action)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private int FindCompletedTask(int region, int action) //Controlla se è stata completata una task eseguendo una certa azione su una regione
@@ -306,7 +372,7 @@ public class GameManager
         }
         else if (value == -1)
         {
-            int completedTask = FindCompletedTask(index, -1);
+            int completedTask = FindCompletedTask(index, 2);
             if (completedTask != -1)
             {
                 drawnTasks[completedTask].completed = true;

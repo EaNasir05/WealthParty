@@ -25,7 +25,9 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private TMP_Text regionVotesProduction; //Produzione di voti dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private RawImage regionPlayerIcon; //Icona del giocatore che sta occupando la regione
     [SerializeField] private GameObject regionProductionLevel; //Immagine che rappresenta il livello di produzione della regione
-    [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "regionTab"
+    [SerializeField] private Button tasksButton; //Bottone da premere per aprire la "tasksTab"
+    [SerializeField] private Button activityButton; //Bottone da premere per aprire la "activityTab"
+    [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "activityTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
     private int selectedRegion; //Regione selezionata dalla mappa
@@ -37,6 +39,10 @@ public class GameMapManager : MonoBehaviour
         readyToStart = true;
         readyToUpgrade = true;
         UpdatePlayersStats();
+        if (GameManager.instance.GetRound() < 2)
+        {
+            tasksButton.interactable = false;
+        }
     }
 
     private void UpdatePlayersStats() //Aggiorna le statistiche di tutti i giocatori su schermo
@@ -95,7 +101,7 @@ public class GameMapManager : MonoBehaviour
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
         taskInfoTab.SetActive(false);
-        startActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
+        activityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
         regionName.text = RegionsManager.regions[index].GetName();
@@ -225,7 +231,7 @@ public class GameMapManager : MonoBehaviour
             UpdatePlayersStats();
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
             {
-                startActivityButton.interactable = false;
+                activityButton.interactable = false;
             }
             buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, 1);
             nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, -1);

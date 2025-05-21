@@ -35,7 +35,7 @@ public class TasksManager
         if (tasks == null)
         {
             tasks = new List<Task>();
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 18; i++)
             {
                 switch (i)
                 {
