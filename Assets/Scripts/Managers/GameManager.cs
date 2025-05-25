@@ -52,15 +52,15 @@ public class GameManager
         if (instance == null)
         {
             instance = this;
-            nextTurnOrder = new List<int[]>();
-            drawnTasks = new List<DrawnTask>();
-            worstRegions = new List<int>();
-            bestRegions = new List<int>();
-            regionsUpgrades = new int[6];
-            activitiesState = new List<List<ActivitiesState>>();
-            upgradesOfThisTurn = new int[6];
-            votesToObtain = 15000;
         }
+        nextTurnOrder = new List<int[]>();
+        drawnTasks = new List<DrawnTask>();
+        worstRegions = new List<int>();
+        bestRegions = new List<int>();
+        regionsUpgrades = new int[6];
+        activitiesState = new List<List<ActivitiesState>>();
+        upgradesOfThisTurn = new int[6];
+        votesToObtain = 15000;
         round = 0;
         lastRound = false;
         currentPlayer = 0;
