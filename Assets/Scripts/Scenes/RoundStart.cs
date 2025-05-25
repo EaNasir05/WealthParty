@@ -13,15 +13,15 @@ public class RoundStartManager : MonoBehaviour
 
     private void Awake()
     {
+        GameManager.instance.OnRoundStart();
         if (!GameManager.instance.IsLastRound())
         {
-            roundTitle.GetComponent<TMP_Text>().text = "INIZIO ROUND " + GameManager.instance.GetRound();
+            roundTitle.GetComponent<TMP_Text>().text = "INIZIO MESE " + GameManager.instance.GetRound();
         }
         else
         {
-            roundTitle.GetComponent<TMP_Text>().text = "ULTIMO ROUND";
+            roundTitle.GetComponent<TMP_Text>().text = "ULTIMO MESE PRIMA DEL REFERENDUM";
         }
-        GameManager.instance.OnRoundStart();
         for (int i = 0; i < 4; i++)
         {
             turnsOrder.transform.GetChild(i).transform.GetChild(1).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
