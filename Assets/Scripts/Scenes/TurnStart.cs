@@ -10,6 +10,7 @@ public class TurnStartManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log(PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName());
         title.text = "TURNO DI " + PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName();
         icon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
     }

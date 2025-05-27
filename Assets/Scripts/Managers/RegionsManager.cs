@@ -81,22 +81,22 @@ public class RegionsManager
         switch (index)
         {
             case 0:
-                regions[index].ResetStats("ABRUZZO", 500, 1000, "Aumeta la produzione di arrosticini");
+                regions[index].ResetStats("ABRUZZO", 1000, 1000, "Aumeta la produzione di arrosticini");
                 break;
             case 1:
-                regions[index].ResetStats("CAMPANIA", 750, 1500, "Pulisci le strade in città");
+                regions[index].ResetStats("CAMPANIA", 1500, 1500, "Pulisci le strade in città");
                 break;
             case 2:
-                regions[index].ResetStats("PUGLIA", 1000, 2000, "Organizza eventi di ballo in paese");
+                regions[index].ResetStats("PUGLIA", 2000, 2000, "Organizza eventi di ballo in paese");
                 break;
             case 3:
-                regions[index].ResetStats("BASILICATA", 1250, 2500, "Ridicolizza il progresso");
+                regions[index].ResetStats("BASILICATA", 2500, 2500, "Ridicolizza il progresso");
                 break;
             case 4:
-                regions[index].ResetStats("CALABRIA", 1500, 3000, "Aumenta la coltivazione di peperoncino");
+                regions[index].ResetStats("CALABRIA", 3000, 3000, "Aumenta la coltivazione di peperoncino");
                 break;
             case 5:
-                regions[index].ResetStats("SICILIA", 1750, 3500, "Garantisci la sicurezza locale");
+                regions[index].ResetStats("SICILIA", 3500, 3500, "Garantisci la sicurezza locale");
                 break;
         }
     }

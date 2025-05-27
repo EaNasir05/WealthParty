@@ -353,7 +353,7 @@ public class GameManager
     public bool UseRegion(int index, int duration) //Attività regionale: vengono sottratti soldi al "currentPlayer", aggiunti voti ad "activitiesIncomes", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
         int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
-        PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
+        PlayersManager.players[currentPlayer].AddMoney(-(RegionsManager.regions[index].GetCost() * duration));
         int votes = Random.Range(production[0], production[1] + 1);
         AddVotes(votes);
         activitiesIncomes += votes;

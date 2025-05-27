@@ -377,7 +377,7 @@ MonoBehaviour:
   turnsOrder: {fileID: 604366619}
   title: {fileID: 125414004}
   roundTitle: {fileID: 865387843}
-  continueButton: {fileID: 0}
+  continueButton: {fileID: 892566174}
 --- !u!1 &125414004
 GameObject:
   m_ObjectHideFlags: 0

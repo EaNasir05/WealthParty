@@ -1520,6 +1520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   increaseButton: {fileID: 712018282}
   decreaseButton: {fileID: 1162807716}
+  activityCost: {fileID: 1712931475}
 --- !u!1 &176936006
 GameObject:
   m_ObjectHideFlags: 0
@@ -14164,7 +14165,7 @@ GameObject:
   - component: {fileID: 2117836300}
   - component: {fileID: 2117836302}
   m_Layer: 5
-  m_Name: Activity
+  m_Name: ShowActivity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

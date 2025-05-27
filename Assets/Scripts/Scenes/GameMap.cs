@@ -33,7 +33,7 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "activityTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
-    private int selectedRegion; //Regione selezionata dalla mappa
+    public static int selectedRegion; //Regione selezionata dalla mappa
     private bool readyToStart; //Booleana che previene errori si spam
     private bool readyToUpgrade; //Booleana che previene errori si spam
 
