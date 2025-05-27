@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ChoosePlayers.unity
     guid: 2223a53a52249d04fbed735c3052ed5a
   - enabled: 1
+    path: Assets/Scenes/ChooseVotes.unity
+    guid: 28a436895b3bd7c49abdbccd24ee2d78
+  - enabled: 1
     path: Assets/Scenes/RoundStart.unity
     guid: acde44915471ee940a4fc3dc5e71bf6e
   - enabled: 1

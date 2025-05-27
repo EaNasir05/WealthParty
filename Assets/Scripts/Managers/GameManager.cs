@@ -33,6 +33,7 @@ public class GameManager
     private int round; //Identificativo dell'attuale round di gioco
     private int currentPlayer; //Indice del giocatore nella lista del "PlayersManager" che sta attualmente giocando il suo turno
     private bool operative; //Non ti interessa...
+    private int votesToObtain; //Voti da ottenere per far partire l'ultimo round
     private int winner; //Indice che indica il giocatore nella lista del "PlayersManager" che ha vinto la partita
     private List<int> worstRegions; //Lista delle 3 regioni meno produttive
     private List<int> bestRegions; //Lista delle 3 regioni più produttive
@@ -51,15 +52,16 @@ public class GameManager
         if (instance == null)
         {
             instance = this;
-            nextTurnOrder = new List<int[]>();
-            drawnTasks = new List<DrawnTask>();
-            worstRegions = new List<int>();
-            bestRegions = new List<int>();
-            regionsUpgrades = new int[6];
-            activitiesState = new List<List<ActivitiesState>>();
-            upgradesOfThisTurn = new int[6];
         }
-        round = 1;
+        nextTurnOrder = new List<int[]>();
+        drawnTasks = new List<DrawnTask>();
+        worstRegions = new List<int>();
+        bestRegions = new List<int>();
+        regionsUpgrades = new int[6];
+        activitiesState = new List<List<ActivitiesState>>();
+        upgradesOfThisTurn = new int[6];
+        votesToObtain = 15000;
+        round = 0;
         lastRound = false;
         currentPlayer = 0;
         for (int i = 0; i < 6; i++)
@@ -71,6 +73,7 @@ public class GameManager
     //Metodi usati per ottenere da altri script valori di attributi privati
     public int GetRound() { return round; }
     public int GetCurrentPlayer() { return currentPlayer; }
+    public int GetVotesToObtain() { return votesToObtain; }
     public int GetUsedActivity() { return usedActivity; }
     public int GetWinner() { return winner; }
     public List<DrawnTask> GetDrawnTasks() { return drawnTasks; }
@@ -78,6 +81,7 @@ public class GameManager
     public bool IsOperative() { return operative; }
 
     //Metodi usati per cambiare da altri script valori di attributi privati
+    public void SetVotesToObtain(int value) { votesToObtain = value; }
     public void SetOperative(bool value) { operative = value; }
     public void SetCurrentPlayer(int value) { currentPlayer = value; }
     public void SetRound (int value) { round = value; }
@@ -92,6 +96,7 @@ public class GameManager
 
     public void OnRoundStart() //Insieme di metodi svolgere all'inizio di un round
     {
+        round++;
         ChangeTurnsOrder();
         drawnTasks?.Clear();
         if (round > 1)
@@ -159,7 +164,9 @@ public class GameManager
                 if (activitiesState[i][j].player == PlayersManager.players[currentPlayer])
                 {
                     int[] production = RegionsManager.regions[i].GetCurrentVotesRate();
-                    activitiesIncomes += Random.Range(production[0], production[1] + 1);
+                    int votes = Random.Range(production[0], production[1] + 1);
+                    AddVotes(votes);
+                    activitiesIncomes += votes;
                     usedActivity = i;
                 }
             }
@@ -168,8 +175,16 @@ public class GameManager
 
     public void OnTurnEnd() //Insieme di metodi svolgere alla fine di un turno
     {
-        AddVotes(activitiesIncomes);
         AddMoney(tasksIncomes);
+        if (nextTurnOrder[currentPlayer] == null)
+        {
+            int[] temp = { currentPlayer, activitiesIncomes };
+            nextTurnOrder.Add(temp);
+        }
+        else
+        {
+            nextTurnOrder[currentPlayer][1] += activitiesIncomes;
+        }
     }
 
     private void UpdateWorstRegions() //Aggiorna "worstRegions"
@@ -319,14 +334,17 @@ public class GameManager
     {
         int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
-        activitiesIncomes += Random.Range(production[0], production[1] + 1);
+        int votes = Random.Range(production[0], production[1] + 1);
+        AddVotes(votes);
+        activitiesIncomes += votes;
         usedActivity = index;
         activitiesState[usedActivity].Add(new ActivitiesState(PlayersManager.players[currentPlayer], duration));
         int completedTask = FindCompletedTask(index, 0);
         if (completedTask != -1)
         {
             drawnTasks[completedTask].completed = true;
-            tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+            int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+            tasksIncomes += money;
             //Avvia animazione task completata
             Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
         }
@@ -365,7 +383,8 @@ public class GameManager
             if (completedTask != -1)
             {
                 drawnTasks[completedTask].completed = true;
-                tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                tasksIncomes += money;
                 //Avvia animazione task completata
                 Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
             }
@@ -376,7 +395,8 @@ public class GameManager
             if (completedTask != -1)
             {
                 drawnTasks[completedTask].completed = true;
-                tasksIncomes += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                tasksIncomes += money;
                 //Avvia animazione task completata
                 Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
             }
@@ -412,15 +432,6 @@ public class GameManager
     public void AddVotes(int value) //Modifica la quantità di voti del "currentPlayer", e tiene il conto dei voti guadagnati in questo turno per calcolare il prossimo ordine dei turni
     {
         PlayersManager.players[currentPlayer].AddVotes(value);
-        if (nextTurnOrder[currentPlayer] == null)
-        {
-            int[] temp = { currentPlayer, value };
-            nextTurnOrder.Add(temp);
-        }
-        else
-        {
-            nextTurnOrder[currentPlayer][1] += value;
-        }
     }
 
     public void AddMoney(int value) //Modifica la quantità di monete del "currentPlayer"
@@ -468,7 +479,6 @@ public class GameManager
             }
             else
             {
-                round++;
                 if (SomeoneIsWinning())
                 {
                     lastRound = true;
@@ -489,7 +499,7 @@ public class GameManager
     {
         foreach (Player player in PlayersManager.players)
         {
-            if (player.GetVotes() >= 15000)
+            if (player.GetVotes() >= votesToObtain)
             {
                 return true;
             }

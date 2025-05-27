@@ -23,6 +23,6 @@ public class PlayersSelectionManager : MonoBehaviour
             PlayersManager.players[x].SetIcon(playersIcons[x].texture);
             PlayersManager.players[x].SetName(playersNames[x].text);
         }
-        SceneManager.LoadScene("RoundStart");
+        SceneManager.LoadScene("ChooseVotes");
     }
 }

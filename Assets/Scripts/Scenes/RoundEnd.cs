@@ -17,7 +17,7 @@ public class RoundEndManager : MonoBehaviour
     private void Awake()
     {
         click = 0;
-        roundTitle.GetComponent<TMP_Text>().text = "FINE ROUND " + GameManager.instance.GetRound();
+        roundTitle.GetComponent<TMP_Text>().text = "FINE MESE " + GameManager.instance.GetRound();
     }
 
     public void ChangeScene() //Mostra gli effetti degli investimenti o inizia un nuovo round
@@ -75,7 +75,7 @@ public class RoundEndManager : MonoBehaviour
         {
             playersInfo[i].transform.GetChild(0).GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
             playersInfo[i].transform.GetChild(1).GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-            if (PlayersManager.players[i].GetVotes() >= 15000)
+            if (PlayersManager.players[i].GetVotes() >= GameManager.instance.GetVotesToObtain())
             {
                 playersInfo[i].transform.GetChild(2).GetComponent<TMP_Text>().color = Color.red;
             }
