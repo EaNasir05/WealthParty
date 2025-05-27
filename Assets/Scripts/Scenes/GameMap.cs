@@ -33,6 +33,7 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
     public static int selectedRegion; //Regione selezionata dalla mappa
+    public static int lastActivityIncome;
     private bool readyToStart; //Booleana che previene errori di spam
     private bool readyToUpgrade; //Booleana che previene errori di spam
 
@@ -222,6 +223,10 @@ public class GameMapManager : MonoBehaviour
             playerMoneyIncome.text = income.ToString();
             playerMoneyIncome.gameObject.SetActive(true);
             StartCoroutine(DissolveItem(playerMoneyIncome.gameObject, 1));
+            playerVotesIncome.color = Color.green;
+            playerVotesIncome.text = "+" + lastActivityIncome;
+            playerVotesIncome.gameObject.SetActive(true);
+            StartCoroutine(DissolveItem(playerVotesIncome.gameObject, 1));
             regionPlayerIcon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
             regionPlayerIcon.gameObject.SetActive(true);
             regionsPlayersIcons[selectedRegion].texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();

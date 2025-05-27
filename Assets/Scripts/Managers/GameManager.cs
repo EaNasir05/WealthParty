@@ -362,6 +362,7 @@ public class GameManager
         PlayersManager.players[currentPlayer].AddMoney(-(RegionsManager.regions[index].GetCost() * duration));
         int votes = Random.Range(production[0], production[1] + 1);
         AddVotes(votes);
+        GameMapManager.lastActivityIncome = votes;
         activitiesIncomes += votes;
         usedActivity = index;
         activitiesState[usedActivity].Add(new ActivitiesState(PlayersManager.players[currentPlayer], duration));
