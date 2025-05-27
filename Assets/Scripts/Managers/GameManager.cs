@@ -43,6 +43,7 @@ public class GameManager
     private int activitiesIncomes; //Voti che il "currentPlayer" ha guadagnato tramite attività regionali
     private int tasksIncomes; //Denaro che il "currentPlayer" ha guadagnato tramite le tasks
     private List<List<ActivitiesState>> activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
+    private List<ActivitiesState> playersTurnsOnRegions;
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
@@ -60,6 +61,11 @@ public class GameManager
         bestRegions = new List<int>();
         regionsUpgrades = new int[6];
         activitiesState = new List<List<ActivitiesState>>();
+        playersTurnsOnRegions = new List<ActivitiesState>();
+        for (int i = 0; i < 6; i++)
+        {
+            playersTurnsOnRegions.Add(new ActivitiesState(null, 0));
+        }
         playersIncomes = new Dictionary<Player, List<int>>();
         foreach (Player player in PlayersManager.players)
         {
