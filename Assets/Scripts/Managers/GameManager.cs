@@ -46,6 +46,7 @@ public class GameManager
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
+    private Dictionary<Player, List<int>> playersIncomes;
 
     public GameManager() //Istanzia il GameManager
     {
@@ -59,6 +60,13 @@ public class GameManager
         bestRegions = new List<int>();
         regionsUpgrades = new int[6];
         activitiesState = new List<List<ActivitiesState>>();
+        playersIncomes = new Dictionary<Player, List<int>>();
+        foreach (Player player in PlayersManager.players)
+        {
+            playersIncomes[player] = new List<int>();
+            playersIncomes[player].Add(0);
+            playersIncomes[player].Add(0);
+        }
         upgradesOfThisTurn = new int[6];
         votesToObtain = 15000;
         round = 0;
@@ -171,6 +179,7 @@ public class GameManager
                 }
             }
         }
+        playersIncomes[PlayersManager.players[currentPlayer]][0] = activitiesIncomes;
     }
 
     public void OnTurnEnd() //Insieme di metodi svolgere alla fine di un turno
@@ -185,6 +194,17 @@ public class GameManager
         {
             nextTurnOrder[currentPlayer][1] += activitiesIncomes;
         }
+    }
+
+    public List<int> GetCurrentPlayerIncomes()
+    {
+        return playersIncomes[PlayersManager.players[currentPlayer]];
+    }
+
+    public void ResetCurrentPlayerIncomes()
+    {
+        playersIncomes[PlayersManager.players[currentPlayer]][0] = 0;
+        playersIncomes[PlayersManager.players[currentPlayer]][1] = 0;
     }
 
     private void UpdateWorstRegions() //Aggiorna "worstRegions"
@@ -330,7 +350,7 @@ public class GameManager
         return -1;
     }
 
-    public void UseRegion(int index, int duration) //Attività regionale: vengono sottratti soldi al "currentPlayer", aggiunti voti ad "activitiesIncomes", ed eventualmente aggiunti soldi a "tasksIncomes"
+    public bool UseRegion(int index, int duration) //Attività regionale: vengono sottratti soldi al "currentPlayer", aggiunti voti ad "activitiesIncomes", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
         int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
         PlayersManager.players[currentPlayer].AddMoney(-RegionsManager.regions[index].GetCost());
@@ -347,7 +367,10 @@ public class GameManager
             tasksIncomes += money;
             //Avvia animazione task completata
             Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+            playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+            return true;
         }
+        return false;
     }
 
     public bool IsAnAvailableRegion(int index) //Ritorna true se un'attività regionale non è stata usata da altri players in questo round
@@ -372,7 +395,7 @@ public class GameManager
         return activitiesState[index][0].player;
     }
 
-    public void UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer", aggiunge un investimento o un sabotaggio a "regionsUpgrades", ed eventualmente aggiunti soldi a "tasksIncomes"
+    public bool UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer", aggiunge un investimento o un sabotaggio a "regionsUpgrades", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
         PlayersManager.players[currentPlayer].AddMoney(-500);
         upgradesOfThisTurn[index] += value;
@@ -387,6 +410,8 @@ public class GameManager
                 tasksIncomes += money;
                 //Avvia animazione task completata
                 Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+                playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                return true;
             }
         }
         else if (value == -1)
@@ -399,8 +424,11 @@ public class GameManager
                 tasksIncomes += money;
                 //Avvia animazione task completata
                 Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
+                playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
+                return true;
             }
         }
+        return false;
     }
 
     public bool IsUpgradable(int region, int value) //Ritorna true se è possibile usare altri investimenti/sabotaggi
