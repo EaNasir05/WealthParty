@@ -7,13 +7,11 @@ using UnityEngine.UI;
 
 public class GameMapManager : MonoBehaviour
 {
-    [SerializeField] private GameObject[] firstPlayerInfo; //Informazioni stampate a schermo del "currentPlayer"
-    [SerializeField] private GameObject[] secondPlayerInfo; //Informazioni stampate a schermo di un giocatore
-    [SerializeField] private GameObject[] thirdPlayerInfo; //Informazioni stampate a schermo di un giocatore
-    [SerializeField] private GameObject[] fourthPlayerInfo; //Informazioni stampate a schermo di un giocatore
-    [SerializeField] private GameObject playersTab; //Scheda che contiene "secondPlayerInfo", "thirdPlayerInfo", "fourthPlayerInfo"
+    [SerializeField] private GameObject[] playerInfo; //Informazioni stampate a schermo del "currentPlayer"
+    [SerializeField] private TMP_Text playerVotesIncome;
+    [SerializeField] private TMP_Text playerMoneyIncome;
     [SerializeField] private GameObject[] incomesTabs; //Schede che mostrano le entrate a inizio turno
-    [SerializeField] private GameObject taskCompletedTab;
+    [SerializeField] private GameObject taskCompletedTab; //Div che compare quando il player completa una task
     [SerializeField] private GameObject tasksTab; //Scheda che contiene le task estratte in questo round
     [SerializeField] private TMP_Text[] tasksNames; //Nomi delle attività stampati nella "tasksTab"
     [SerializeField] private GameObject taskInfoTab; //Finestra che contiene le informazioni di una attività
@@ -26,7 +24,8 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionUpgradeCost; //Costo dell'investimento nella "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionVotesProduction; //Produzione di voti dell'attività regionale della "selectedRegion" nella "regionTab"
-    [SerializeField] private RawImage regionPlayerIcon; //Icona del giocatore che sta occupando la regione
+    [SerializeField] private RawImage regionPlayerIcon; //Icona del giocatore che sta occupando la regione selezionata
+    [SerializeField] private RawImage[] regionsPlayersIcons; //Icone dei giocatori sopra le regioni nella mappa
     [SerializeField] private GameObject regionProductionLevel; //Immagine che rappresenta il livello di produzione della regione
     [SerializeField] private Button tasksButton; //Bottone da premere per aprire la "tasksTab"
     [SerializeField] private Button activityButton; //Bottone da premere per aprire la "activityTab"
@@ -34,17 +33,27 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
     public static int selectedRegion; //Regione selezionata dalla mappa
-    private bool readyToStart; //Booleana che previene errori si spam
-    private bool readyToUpgrade; //Booleana che previene errori si spam
+    public static int lastActivityIncome;
+    private bool readyToStart; //Booleana che previene errori di spam
+    private bool readyToUpgrade; //Booleana che previene errori di spam
 
     private void Awake()
     {
         readyToStart = true;
         readyToUpgrade = true;
-        UpdatePlayersStats();
+        UpdatePlayerStats();
         if (GameManager.instance.GetRound() < 2)
         {
             tasksButton.interactable = false;
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            Player player = GameManager.instance.GetPlayerOnRegion(i);
+            if (player != null)
+            {
+                regionsPlayersIcons[i].texture = player.GetIcon();
+                regionsPlayersIcons[i].gameObject.SetActive(true);
+            }
         }
     }
 
@@ -52,7 +61,7 @@ public class GameMapManager : MonoBehaviour
     {
         List<int> incomes = GameManager.instance.GetCurrentPlayerIncomes();
         incomesTabs[0].SetActive(true);
-        StartCoroutine(DissolveItem(incomesTabs[0]));
+        StartCoroutine(DissolveItem(incomesTabs[0], 2));
         for (int i = 0; i < 2; i++)
         {
             if (incomes[i] != 0)
@@ -68,68 +77,34 @@ public class GameMapManager : MonoBehaviour
                 }
                 incomesTabs[i + 1].transform.GetChild(1).GetComponent<TMP_Text>().text = "+" + incomes[i] + value;
                 incomesTabs[i + 1].SetActive(true);
-                StartCoroutine(DissolveItem(incomesTabs[i + 1]));
+                StartCoroutine(DissolveItem(incomesTabs[i + 1], 2));
             }
+        }
+        playerMoneyIncome.text = "+" + (incomes[1] + 3000);
+        playerMoneyIncome.color = Color.green;
+        playerMoneyIncome.gameObject.SetActive(true);
+        StartCoroutine(DissolveItem(playerMoneyIncome.gameObject, 1));
+        if (incomes[0] > 0)
+        {
+            playerVotesIncome.text = "+" + incomes[0];
+            playerVotesIncome.color = Color.green;
+            playerVotesIncome.gameObject.SetActive(true);
+            StartCoroutine(DissolveItem(playerVotesIncome.gameObject, 1));
         }
     }
 
-    private IEnumerator DissolveItem(GameObject item)
+    private IEnumerator DissolveItem(GameObject item, int time)
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(time);
         item.SetActive(false);
     }
 
-    private void UpdatePlayersStats() //Aggiorna le statistiche di tutti i giocatori su schermo
+    private void UpdatePlayerStats() //Aggiorna le statistiche di tutti i giocatori su schermo
     {
-        firstPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
-        firstPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName();
-        firstPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetVotes().ToString();
-        firstPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney().ToString();
-        /*
-        int count = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == GameManager.instance.GetCurrentPlayer())
-            {
-                firstPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
-                firstPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-                firstPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                firstPlayerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetMoney().ToString();
-            }
-            else
-            {
-                switch (count)
-                {
-                    case 0:
-                        secondPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
-                        secondPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-                        secondPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        break;
-                    case 1:
-                        thirdPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
-                        thirdPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-                        thirdPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        break;
-                    case 2:
-                        fourthPlayerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[i].GetIcon();
-                        fourthPlayerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetName();
-                        fourthPlayerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[i].GetVotes().ToString();
-                        break;
-                }
-                count++;
-            }
-        }
-        */
-    }
-
-    public void ShowAllPlayers() //Mostra la "playersTab"
-    {
-        playersTab.SetActive(true);
-    }
-
-    public void HideAllPlayers() //Nasconde la "playersTab"
-    {
-        playersTab.SetActive(false);
+        playerInfo[0].GetComponent<RawImage>().texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
+        playerInfo[1].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetName();
+        playerInfo[2].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetVotes().ToString();
+        playerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney().ToString();
     }
 
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
@@ -243,9 +218,20 @@ public class GameMapManager : MonoBehaviour
         {
             readyToStart = false;
             bool completed = GameManager.instance.UseRegion(selectedRegion, int.Parse(activityDuration.text));
+            int income = -(RegionsManager.regions[selectedRegion].GetCost() * int.Parse(activityDuration.text));
+            playerMoneyIncome.color = Color.red;
+            playerMoneyIncome.text = income.ToString();
+            playerMoneyIncome.gameObject.SetActive(true);
+            StartCoroutine(DissolveItem(playerMoneyIncome.gameObject, 1));
+            playerVotesIncome.color = Color.green;
+            playerVotesIncome.text = "+" + lastActivityIncome;
+            playerVotesIncome.gameObject.SetActive(true);
+            StartCoroutine(DissolveItem(playerVotesIncome.gameObject, 1));
             regionPlayerIcon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
             regionPlayerIcon.gameObject.SetActive(true);
-            UpdatePlayersStats();
+            regionsPlayersIcons[selectedRegion].texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
+            regionsPlayersIcons[selectedRegion].gameObject.SetActive(true);
+            UpdatePlayerStats();
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
             {
                 startActivityButton.interactable = false;
@@ -253,7 +239,7 @@ public class GameMapManager : MonoBehaviour
             if (completed)
             {
                 taskCompletedTab.SetActive(true);
-                StartCoroutine(DissolveItem(taskCompletedTab));
+                StartCoroutine(DissolveItem(taskCompletedTab, 2));
             }
             buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, 1);
             nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, -1);
@@ -267,7 +253,7 @@ public class GameMapManager : MonoBehaviour
         {
             readyToUpgrade = false;
             bool completed = GameManager.instance.UpgradeRegion(selectedRegion, value);
-            UpdatePlayersStats();
+            UpdatePlayerStats();
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())
             {
                 activityButton.interactable = false;
@@ -275,7 +261,7 @@ public class GameMapManager : MonoBehaviour
             if (completed)
             {
                 taskCompletedTab.SetActive(true);
-                StartCoroutine(DissolveItem(taskCompletedTab));
+                StartCoroutine(DissolveItem(taskCompletedTab, 2));
             }
             buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, 1);
             nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(selectedRegion, -1);
