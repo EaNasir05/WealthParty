@@ -167,6 +167,7 @@ public class GameMapManager : MonoBehaviour
     public void ShowActivityTab()
     {
         activityDuration.text = "1";
+        activityTab.transform.GetChild(0).GetComponent<TMP_Text>().text = RegionsManager.regions[selectedRegion].GetActivity();
         activityTab.transform.GetChild(3).GetComponent<Button>().interactable = false;
         activityTab.SetActive(true);
     }

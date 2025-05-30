@@ -31,6 +31,7 @@ public class Region
     public int GetLevel() { return level; }
     public int GetCost() { return cost; }
     public int GetVotesRate() { return votesRate; }
+    public string GetActivity() { return activity; }
     public bool isActive() { return active; }
 
     //Metodi usati per cambiare da altri script valori di attributi privati
