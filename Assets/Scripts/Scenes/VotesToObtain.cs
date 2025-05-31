@@ -14,17 +14,20 @@ public class VotesToObtain : MonoBehaviour
 
     public void StartGame() //Salva "votesToObtain" nel game manager e inizia la partita
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         GameManager.instance.SetVotesToObtain(int.Parse(votesToObtain.text));
         SceneManager.LoadScene("RoundStart");
     }
 
     public void ShowInfoTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         infoTab.SetActive(true);
     }
 
     public void HideInfoTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         infoTab.SetActive(false);
     }
 }

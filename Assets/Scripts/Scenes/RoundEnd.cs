@@ -22,6 +22,7 @@ public class RoundEndManager : MonoBehaviour
 
     public void ChangeScene() //Mostra gli effetti degli investimenti o inizia un nuovo round
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         click++;
         if (click == 1 && !GameManager.instance.GotAnyUpdates())
         {

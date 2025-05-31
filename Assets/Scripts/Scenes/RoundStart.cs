@@ -31,6 +31,7 @@ public class RoundStartManager : MonoBehaviour
 
     public void ShowNewTurnsOrder() //Mostra "turnsOrder"
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         roundTitle.SetActive(false);
         continueButton.SetActive(false);
         title.SetActive(true);
@@ -39,6 +40,7 @@ public class RoundStartManager : MonoBehaviour
 
     public void ChangeScene() //Inizia il primo turno
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         SceneManager.LoadScene("TurnStart");
     }
 }

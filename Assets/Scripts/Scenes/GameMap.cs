@@ -95,7 +95,7 @@ public class GameMapManager : MonoBehaviour
 
     private IEnumerator DissolveItem(GameObject item, int time)
     {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(2);
         item.SetActive(false);
     }
 
@@ -109,6 +109,7 @@ public class GameMapManager : MonoBehaviour
 
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         taskInfoTab.SetActive(false);
         activityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
@@ -160,12 +161,14 @@ public class GameMapManager : MonoBehaviour
 
     public void HideRegionTab() //Nasconde la regionTab
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         regionTab.SetActive(false);
         activityTab.SetActive(false);
     }
 
     public void ShowActivityTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         activityDuration.text = "1";
         activityTab.transform.GetChild(0).GetComponent<TMP_Text>().text = RegionsManager.regions[selectedRegion].GetActivity();
         activityTab.transform.GetChild(3).GetComponent<Button>().interactable = false;
@@ -174,6 +177,7 @@ public class GameMapManager : MonoBehaviour
 
     public void ShowTasksList() //Apre la "tasksTab"
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
         for (int i = 0; i < drawnTasks.Count; i++)
         {
@@ -192,11 +196,13 @@ public class GameMapManager : MonoBehaviour
 
     public void HideTasksList() //Chiude la "tasksTab"
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         tasksTab.SetActive(false);
     }
 
     public void ShowTaskInfo(int index) //Apre la "taskInfoTab"
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         tasksTab.SetActive(false);
         List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
         taskInfo[0].text = TasksManager.tasks[drawnTasks[index].task].GetName();
@@ -209,6 +215,7 @@ public class GameMapManager : MonoBehaviour
 
     public void HideTaskInfo() //Chiude la "taskInfoTab"
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         taskInfoTab.SetActive(false);
         tasksTab.SetActive(true);
     }
@@ -217,6 +224,7 @@ public class GameMapManager : MonoBehaviour
     {
         if (readyToStart)
         {
+            SoundEffectsManager.instance.PlayButtonClip();
             readyToStart = false;
             bool completed = GameManager.instance.UseRegion(selectedRegion, int.Parse(activityDuration.text));
             int income = -(RegionsManager.regions[selectedRegion].GetCost() * int.Parse(activityDuration.text));
@@ -252,6 +260,7 @@ public class GameMapManager : MonoBehaviour
     {
         if (readyToUpgrade)
         {
+            SoundEffectsManager.instance.PlayButtonClip();
             readyToUpgrade = false;
             bool completed = GameManager.instance.UpgradeRegion(selectedRegion, value);
             UpdatePlayerStats();
@@ -272,6 +281,7 @@ public class GameMapManager : MonoBehaviour
 
     public void NextTurn() //Termina il turno
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         GameManager.instance.ChangeTurn();
     }
 }
