@@ -157,6 +157,7 @@ public class GameManager
                 { "oldVotesRate1", rate[0] },
                 { "oldVotesRate2", rate[1] }
             };
+            Debug.Log("Round " + round + ": " + RegionsManager.regions[i].GetName() + " ottiene: " + regionsUpgrades[i]);
             RegionsManager.regions[i].ChangeLevel(regionsUpgrades[i]);
             list.Add(dic);
         }
@@ -400,8 +401,6 @@ public class GameManager
             drawnTasks[completedTask].completed = true;
             int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
             tasksIncomes += money;
-            //Avvia animazione task completata
-            Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
             playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
             return true;
         }
@@ -448,8 +447,6 @@ public class GameManager
                 drawnTasks[completedTask].completed = true;
                 int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
                 tasksIncomes += money;
-                //Avvia animazione task completata
-                Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
                 playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
                 return true;
             }
@@ -462,8 +459,6 @@ public class GameManager
                 drawnTasks[completedTask].completed = true;
                 int money = TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
                 tasksIncomes += money;
-                //Avvia animazione task completata
-                Debug.Log("Task '" + TasksManager.tasks[drawnTasks[completedTask].task].GetName() + "' completata");
                 playersIncomes[PlayersManager.players[currentPlayer]][1] += TasksManager.tasks[drawnTasks[completedTask].task].GetMoney();
                 return true;
             }

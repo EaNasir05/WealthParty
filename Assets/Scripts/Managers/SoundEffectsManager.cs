@@ -9,13 +9,17 @@ public class SoundEffectsManager : MonoBehaviour
     [SerializeField] private AudioClip victoryClip;
     [SerializeField] private AudioClip nextTurnClip;
     [SerializeField] private AudioClip incomeClip;
-    [SerializeField] private AudioClip[] regionsClips;
-    [SerializeField] private AudioClip mainMenuOST;
+    private AudioSource[] regionsOST;
     private AudioSource currentOST;
 
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        regionsOST = GameObject.FindGameObjectWithTag("OSTManager")?.GetComponents<AudioSource>();
     }
 
     private IEnumerator PlaySFX(AudioClip clip, float volume)
@@ -53,17 +57,12 @@ public class SoundEffectsManager : MonoBehaviour
         if (currentOST != null)
         {
             currentOST.Stop();
-            Destroy(currentOST.gameObject);
         }
-        AudioSource newSource = Instantiate(soundEffectObject, Vector3.zero, Quaternion.identity);
-        newSource.clip = regionsClips[region];
-        newSource.volume = 1;
-        newSource.loop = true;
-        currentOST = newSource;
-        newSource.Play();
+        currentOST = regionsOST[region];
+        currentOST.Play();
     }
 
-    public void PlayMainMenuOST()
+    /*public void PlayMainMenuOST()
     {
         if (currentOST != null)
         {
@@ -76,14 +75,13 @@ public class SoundEffectsManager : MonoBehaviour
         newSource.loop = true;
         currentOST = newSource;
         newSource.Play();
-    }
+    }*/
 
     public void StopCurrentOST()
     {
         if (currentOST != null)
         {
             currentOST.Stop();
-            Destroy(currentOST.gameObject);
         }
         currentOST = null;
     }

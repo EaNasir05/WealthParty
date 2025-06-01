@@ -114,6 +114,7 @@ public class GameMapManager : MonoBehaviour
     {
         SoundEffectsManager.instance.PlayButtonClip();
         taskInfoTab.SetActive(false);
+        SoundEffectsManager.instance.PlayRegionOST(index);
         activityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
         nerfActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, -1);
@@ -171,6 +172,7 @@ public class GameMapManager : MonoBehaviour
 
     public void HideRegionTab() //Nasconde la regionTab
     {
+        SoundEffectsManager.instance.StopCurrentOST();
         SoundEffectsManager.instance.PlayButtonClip();
         regionTab.SetActive(false);
         activityTab.SetActive(false);
