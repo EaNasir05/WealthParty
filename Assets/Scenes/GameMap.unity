@@ -3694,6 +3694,7 @@ MonoBehaviour:
   activityDuration: {fileID: 172828903}
   regionTab: {fileID: 108666080}
   regionName: {fileID: 1444939237}
+  regionLevel: {fileID: 566917752}
   regionActivityCost: {fileID: 1712931475}
   regionUpgradeCost: {fileID: 1888409786}
   regionVotesProduction: {fileID: 2104479211}
@@ -4477,7 +4478,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PRODUZIONE
+  m_text: 'LIVELLO: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

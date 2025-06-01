@@ -21,6 +21,7 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private TMP_Text activityDuration; //Testo che contiene la durata della tua prossima attività
     [SerializeField] private GameObject regionTab; //Scheda che contiene le statistiche della "selectedRegion", e i pulsanti per svolgere la sua attività regionale e per investirci
     [SerializeField] private TMP_Text regionName; //Nome della "selectedRegion" nella "regionTab"
+    [SerializeField] private TMP_Text regionLevel;
     [SerializeField] private TMP_Text regionActivityCost; //Costo dell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionUpgradeCost; //Costo dell'investimento nella "selectedRegion" nella "regionTab"
     [SerializeField] private TMP_Text regionVotesProduction; //Produzione di voti dell'attività regionale della "selectedRegion" nella "regionTab"
@@ -125,7 +126,14 @@ public class GameMapManager : MonoBehaviour
         {
             regionPlayerIcon.gameObject.SetActive(false);
         }
-        int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
+        List<int> previousUsedRegion = GameManager.instance.GetPreviousUsedRegion();
+        string levelText = "LIVELLO: " + RegionsManager.regions[index].GetLevel();
+        if (previousUsedRegion[0] == index)
+        {
+            levelText += " (" + (previousUsedRegion[1] * -1) + ")";
+        }
+        regionLevel.text = levelText;
+        int[] production = GameManager.instance.GetPlayerVotesRateOnRegion(index);
         regionVotesProduction.text = production[0] + " - " + production[1];
         regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
         regionUpgradeCost.text = 500.ToString() + "€";

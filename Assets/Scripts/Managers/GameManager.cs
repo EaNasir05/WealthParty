@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
+using Random = UnityEngine.Random;
 
 public class DrawnTask
 {
@@ -43,11 +45,11 @@ public class GameManager
     private int activitiesIncomes; //Voti che il "currentPlayer" ha guadagnato tramite attività regionali
     private int tasksIncomes; //Denaro che il "currentPlayer" ha guadagnato tramite le tasks
     private List<List<ActivitiesState>> activitiesState; //Attività regionali che gli altri giocatori hanno già usato in questo round
-    private List<ActivitiesState> playersTurnsOnRegions;
     private int usedActivity; //Attività regionale che il "currentPlayer" ha usato nel suo turno
     private int[] upgradesOfThisTurn; //Quante volte il giocatore ha investito in una certa regione
     private bool lastRound; //Se è l'ultimo round è true
     private Dictionary<Player, List<int>> playersIncomes;
+    private Dictionary<Player, List<int>> playersTurnsOnRegions;
 
     public GameManager() //Istanzia il GameManager
     {
@@ -61,10 +63,12 @@ public class GameManager
         bestRegions = new List<int>();
         regionsUpgrades = new int[6];
         activitiesState = new List<List<ActivitiesState>>();
-        playersTurnsOnRegions = new List<ActivitiesState>();
-        for (int i = 0; i < 6; i++)
+        playersTurnsOnRegions = new Dictionary<Player, List<int>>();
+        foreach (Player player in PlayersManager.players)
         {
-            playersTurnsOnRegions.Add(new ActivitiesState(null, 0));
+            playersTurnsOnRegions[player] = new List<int>();
+            playersTurnsOnRegions[player].Add(-1);
+            playersTurnsOnRegions[player].Add(0);
         }
         playersIncomes = new Dictionary<Player, List<int>>();
         foreach (Player player in PlayersManager.players)
@@ -199,6 +203,15 @@ public class GameManager
         else
         {
             nextTurnOrder[currentPlayer][1] += activitiesIncomes;
+        }
+        if (usedActivity == playersTurnsOnRegions[PlayersManager.players[currentPlayer]][0])
+        {
+            playersTurnsOnRegions[PlayersManager.players[currentPlayer]][1]++;
+        }
+        else
+        {
+            playersTurnsOnRegions[PlayersManager.players[currentPlayer]][0] = usedActivity;
+            playersTurnsOnRegions[PlayersManager.players[currentPlayer]][1] = 1;
         }
     }
 
@@ -356,9 +369,24 @@ public class GameManager
         return -1;
     }
 
+    public int[] GetPlayerVotesRateOnRegion(int region)
+    {
+        int turnsOnRegion;
+        if (region != playersTurnsOnRegions[PlayersManager.players[currentPlayer]][0])
+        {
+            turnsOnRegion = 0;
+        }
+        else
+        {
+            turnsOnRegion = playersTurnsOnRegions[PlayersManager.players[currentPlayer]][1];
+        }
+        int[] production = RegionsManager.regions[region].GetPlayerVotesRate(turnsOnRegion);
+        return production;
+    }
+
     public bool UseRegion(int index, int duration) //Attività regionale: vengono sottratti soldi al "currentPlayer", aggiunti voti ad "activitiesIncomes", ed eventualmente aggiunti soldi a "tasksIncomes"
     {
-        int[] production = RegionsManager.regions[index].GetCurrentVotesRate();
+        int[] production = GetPlayerVotesRateOnRegion(index);
         PlayersManager.players[currentPlayer].AddMoney(-(RegionsManager.regions[index].GetCost() * duration));
         int votes = Random.Range(production[0], production[1] + 1);
         AddVotes(votes);
@@ -400,6 +428,11 @@ public class GameManager
             return null;
         }
         return activitiesState[index][0].player;
+    }
+
+    public List<int> GetPreviousUsedRegion()
+    {
+        return playersTurnsOnRegions[PlayersManager.players[currentPlayer]];
     }
 
     public bool UpgradeRegion(int index, int value) //Investimento: sottrae soldi al "currentPlayer", aggiunge un investimento o un sabotaggio a "regionsUpgrades", ed eventualmente aggiunti soldi a "tasksIncomes"

@@ -43,6 +43,14 @@ public class Region
         int[] production = { (int)(currentVotesRate * 0.9), (int)(currentVotesRate * 1.1) };
         return production;
     }
+
+    public int[] GetPlayerVotesRate(int turnsOnRegion)
+    {
+        int tempLevel = level - turnsOnRegion;
+        if (tempLevel < -4) { tempLevel = -4; }
+        int[] production = { (int)((votesRate + (int)(votesRate * 0.2 * tempLevel)) * 0.9), (int)((votesRate + (int)(votesRate * 0.2 * tempLevel)) * 1.1) };
+        return production;
+    }
     
     public void ChangeLevel(int value) //Applica gli investimenti dei giocatori
     {
