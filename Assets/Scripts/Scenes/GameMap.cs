@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
 public class GameMapManager : MonoBehaviour
@@ -61,6 +62,7 @@ public class GameMapManager : MonoBehaviour
     private void Start()
     {
         List<int> incomes = GameManager.instance.GetCurrentPlayerIncomes();
+        SoundEffectsManager.instance.PlayIncomeClip();
         incomesTabs[0].SetActive(true);
         StartCoroutine(DissolveItem(incomesTabs[0], 2));
         for (int i = 0; i < 2; i++)
@@ -236,6 +238,7 @@ public class GameMapManager : MonoBehaviour
             readyToStart = false;
             bool completed = GameManager.instance.UseRegion(selectedRegion, int.Parse(activityDuration.text));
             int income = -(RegionsManager.regions[selectedRegion].GetCost() * int.Parse(activityDuration.text));
+            SoundEffectsManager.instance.PlayIncomeClip();
             playerMoneyIncome.color = Color.red;
             playerMoneyIncome.text = income.ToString();
             playerMoneyIncome.gameObject.SetActive(true);
@@ -270,6 +273,11 @@ public class GameMapManager : MonoBehaviour
         {
             SoundEffectsManager.instance.PlayButtonClip();
             readyToUpgrade = false;
+            SoundEffectsManager.instance.PlayIncomeClip();
+            playerMoneyIncome.color = Color.red;
+            playerMoneyIncome.text = "-500";
+            playerMoneyIncome.gameObject.SetActive(true);
+            StartCoroutine(DissolveItem(playerMoneyIncome.gameObject, 1));
             bool completed = GameManager.instance.UpgradeRegion(selectedRegion, value);
             UpdatePlayerStats();
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())

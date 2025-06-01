@@ -40,7 +40,7 @@ public class SoundEffectsManager : MonoBehaviour
 
     public void PlayNextTurnClip()
     {
-        StartCoroutine(PlaySFX(nextTurnClip, 1));
+        StartCoroutine(PlaySFX(nextTurnClip, (float)0.75));
     }
 
     public void PlayIncomeClip()

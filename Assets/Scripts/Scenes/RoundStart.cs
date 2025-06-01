@@ -29,6 +29,11 @@ public class RoundStartManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        SoundEffectsManager.instance.PlayButtonClip();
+    }
+
     public void ShowNewTurnsOrder() //Mostra "turnsOrder"
     {
         SoundEffectsManager.instance.PlayButtonClip();

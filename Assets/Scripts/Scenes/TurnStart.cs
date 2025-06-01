@@ -14,6 +14,11 @@ public class TurnStartManager : MonoBehaviour
         icon.texture = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetIcon();
     }
 
+    private void Start()
+    {
+        SoundEffectsManager.instance.PlayNextTurnClip();
+    }
+
     public void StartTurn() //Inizia effettivamente il turno
     {
         SoundEffectsManager.instance.PlayButtonClip();

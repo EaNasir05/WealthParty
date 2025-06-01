@@ -20,6 +20,11 @@ public class RoundEndManager : MonoBehaviour
         roundTitle.GetComponent<TMP_Text>().text = "FINE MESE " + GameManager.instance.GetRound();
     }
 
+    private void Start()
+    {
+        SoundEffectsManager.instance.PlayNextTurnClip();
+    }
+
     public void ChangeScene() //Mostra gli effetti degli investimenti o inizia un nuovo round
     {
         SoundEffectsManager.instance.PlayButtonClip();

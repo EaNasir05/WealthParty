@@ -12,9 +12,13 @@ public class VotesToObtain : MonoBehaviour
         votesToObtain.characterLimit = 5;
     }
 
-    public void StartGame() //Salva "votesToObtain" nel game manager e inizia la partita
+    public void Start()
     {
         SoundEffectsManager.instance.PlayButtonClip();
+    }
+
+    public void StartGame() //Salva "votesToObtain" nel game manager e inizia la partita
+    {
         GameManager.instance.SetVotesToObtain(int.Parse(votesToObtain.text));
         SceneManager.LoadScene("RoundStart");
     }

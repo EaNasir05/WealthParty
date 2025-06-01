@@ -1950,9 +1950,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundEffectObject: {fileID: 5192730362297039558, guid: f2960e45a1c3175489dcb6cabb4a313d, type: 3}
-  buttonClip: {fileID: 8300000, guid: 514a40e836a01754aa59772dc1ff8637, type: 3}
+  buttonClip: {fileID: 8300000, guid: 7d6ad36bcde354843b3ff6a03c72194b, type: 3}
   victoryClip: {fileID: 0}
-  nextTurnClip: {fileID: 0}
+  nextTurnClip: {fileID: 8300000, guid: b55bb341b817bb14a8eedb7598b850d1, type: 3}
   incomeClip: {fileID: 0}
   regionsClips:
   - {fileID: 0}

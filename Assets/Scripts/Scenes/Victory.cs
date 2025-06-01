@@ -14,6 +14,11 @@ public class VictoryManager : MonoBehaviour
         icon.texture = PlayersManager.players[GameManager.instance.GetWinner()].GetIcon();
     }
 
+    private void Start()
+    {
+        SoundEffectsManager.instance.PlayVictoryClip();
+    }
+
     public void ChangeScene()
     {
         SceneManager.LoadScene("MainMenu");

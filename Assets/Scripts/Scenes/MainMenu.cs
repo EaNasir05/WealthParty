@@ -13,13 +13,11 @@ public class MainMenuManager : MonoBehaviour
 
     public void NewGame() //Va alla scena "ChoosePlayers"
     {
-        SoundEffectsManager.instance.PlayButtonClip();
         SceneManager.LoadScene("ChoosePlayers");
     }
 
     public void Quit() //Chiude il gioco
     {
-        SoundEffectsManager.instance.PlayButtonClip();
         Application.Quit();
     }
 }

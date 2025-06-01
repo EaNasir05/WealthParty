@@ -16,9 +16,13 @@ public class PlayersSelectionManager : MonoBehaviour
         }
     }
 
-    public void StartGame() //Assegna le icone e i nomi ai players in "PlayersManager" e inizia la partita
+    private void Start()
     {
         SoundEffectsManager.instance.PlayButtonClip();
+    }
+
+    public void StartGame() //Assegna le icone e i nomi ai players in "PlayersManager" e inizia la partita
+    {
         for (int x = 0; x < 4; x++)
         {
             PlayersManager.players[x].SetIcon(playersIcons[x].texture);
