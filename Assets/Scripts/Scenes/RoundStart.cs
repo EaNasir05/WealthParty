@@ -55,11 +55,13 @@ public class RoundStartManager : MonoBehaviour
 
     public void ShowInfoTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         infoTab.SetActive(true);
     }
 
     public void HideInfoTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         infoTab.SetActive(false);
     }
 }

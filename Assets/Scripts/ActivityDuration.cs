@@ -7,6 +7,7 @@ public class ActivityDuration : MonoBehaviour
     [SerializeField] private Button increaseButton;
     [SerializeField] private Button decreaseButton;
     [SerializeField] private TMP_Text activityCost;
+    [SerializeField] private Button startActivityButton;
     private int originalCost;
 
     public void IncreaseDuration()
@@ -17,6 +18,7 @@ public class ActivityDuration : MonoBehaviour
         increaseButton.interactable = false;
         int cost = RegionsManager.regions[GameMapManager.selectedRegion].GetCost();
         activityCost.text = (cost * 2) + "€";
+        CheckActivityCost(cost * 2);
         gameObject.GetComponent<TMP_Text>().text = duration.ToString();
     }
 
@@ -28,6 +30,12 @@ public class ActivityDuration : MonoBehaviour
         decreaseButton.interactable = false;
         int cost = RegionsManager.regions[GameMapManager.selectedRegion].GetCost();
         activityCost.text = cost + "€";
+        CheckActivityCost(cost);
         gameObject.GetComponent<TMP_Text>().text = duration.ToString();
+    }
+
+    private void CheckActivityCost(int cost)
+    {
+        startActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= cost;
     }
 }

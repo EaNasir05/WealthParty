@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
@@ -36,6 +37,9 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "activityTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
+    [SerializeField] private GameObject upgradesTab;
+    [SerializeField] private TMP_Text activityName;
+    [SerializeField] private TMP_Text activityCost;
     [SerializeField] private GameObject[] infoTabs;
     public static int selectedRegion; //Regione selezionata dalla mappa
     private int selectedInfoTab;
@@ -64,6 +68,7 @@ public class GameMapManager : MonoBehaviour
             }
             upgradesOfThisTurn.Add(0);
         }
+        selectedInfoTab = 0;
     }
 
     private void Start()
@@ -152,6 +157,7 @@ public class GameMapManager : MonoBehaviour
     {
         SoundEffectsManager.instance.PlayButtonClip();
         taskInfoTab.SetActive(false);
+        upgradesTab.SetActive(true);
         SoundEffectsManager.instance.PlayRegionOST(index);
         activityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= RegionsManager.regions[index].GetCost() && GameManager.instance.IsAnAvailableRegion(index);
         buffActivityButton.interactable = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() >= 500 && GameManager.instance.IsUpgradable(index, 1);
@@ -176,7 +182,7 @@ public class GameMapManager : MonoBehaviour
         regionLevel.text = levelText;
         int[] production = GameManager.instance.GetPlayerVotesRateOnRegion(index);
         regionVotesProduction.text = production[0] + " - " + production[1];
-        regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
+        regionActivityCost.text = RegionsManager.regions[index].GetCost() + "€";
         regionUpgradeCost.text = 500.ToString() + "€";
         selectedRegion = index;
         UpdateProductionLevel(index);
@@ -194,10 +200,20 @@ public class GameMapManager : MonoBehaviour
     public void ShowActivityTab()
     {
         SoundEffectsManager.instance.PlayButtonClip();
+        activityCost.text = RegionsManager.regions[selectedRegion].GetCost() + "€";
         activityDuration.text = "1";
-        activityTab.transform.GetChild(1).GetComponent<TMP_Text>().text = RegionsManager.regions[selectedRegion].GetActivity();
-        activityTab.transform.GetChild(6).GetComponent<Button>().interactable = false;
+        activityName.text = RegionsManager.regions[selectedRegion].GetActivity();
+        activityTab.transform.GetChild(5).GetComponent<Button>().interactable = false;
+        activityTab.transform.GetChild(4).GetComponent<Button>().interactable = true;
+        upgradesTab.SetActive(false);
         activityTab.SetActive(true);
+    }
+
+    public void HideActivityTab()
+    {
+        SoundEffectsManager.instance.PlayButtonClip();
+        activityTab.SetActive(false);
+        upgradesTab.SetActive(true);
     }
 
     public void ShowTasksList() //Apre la "tasksTab"
@@ -228,14 +244,20 @@ public class GameMapManager : MonoBehaviour
     public void ShowTaskInfo(int index) //Apre la "taskInfoTab"
     {
         SoundEffectsManager.instance.PlayButtonClip();
-        tasksTab.SetActive(false);
         List<DrawnTask> drawnTasks = GameManager.instance.GetDrawnTasks();
         taskInfo[0].text = TasksManager.tasks[drawnTasks[index].task].GetName();
         taskInfo[1].text = TasksManager.tasks[drawnTasks[index].task].GetMoney() + "€";
         taskInfo[2].text = TasksManager.tasks[drawnTasks[index].task].GetDescription();
         goToRegionButton.onClick.RemoveAllListeners();
-        goToRegionButton.onClick.AddListener(() => SelectRegion(TasksManager.tasks[drawnTasks[index].task].GetRegion()));
+        goToRegionButton.onClick.AddListener(() => FromTaskToRegion(TasksManager.tasks[drawnTasks[index].task].GetRegion()));
         taskInfoTab.SetActive(true);
+    }
+
+    public void FromTaskToRegion(int region)
+    {
+        tasksTab.SetActive(false);
+        taskInfoTab.SetActive(false);
+        SelectRegion(region);
     }
 
     public void HideTaskInfo() //Chiude la "taskInfoTab"
@@ -246,6 +268,8 @@ public class GameMapManager : MonoBehaviour
 
     public void ShowInfoTab(int index)
     {
+        SoundEffectsManager.instance.PlayButtonClip();
+        infoTabs[selectedInfoTab].SetActive(false);
         selectedInfoTab = index;
         infoTabs[selectedInfoTab].transform.GetChild(0).gameObject.SetActive(true);
         for (int i = 1; i < infoTabs[selectedInfoTab].transform.childCount; i++)
@@ -255,14 +279,23 @@ public class GameMapManager : MonoBehaviour
         infoTabs[selectedInfoTab].SetActive(true);
     }
 
-    public void SwitchInfoTab(int prev, int next)
+    public void ShowNextInfoTab(int index)
     {
-        infoTabs[selectedInfoTab].transform.GetChild(prev).gameObject.SetActive(false);
-        infoTabs[selectedInfoTab].transform.GetChild(next).gameObject.SetActive(true);
+        SoundEffectsManager.instance.PlayButtonClip();
+        infoTabs[selectedInfoTab].transform.GetChild(index).gameObject.SetActive(false);
+        infoTabs[selectedInfoTab].transform.GetChild(index + 1).gameObject.SetActive(true);
+    }
+
+    public void ShowPreviousInfoTab(int index)
+    {
+        SoundEffectsManager.instance.PlayButtonClip();
+        infoTabs[selectedInfoTab].transform.GetChild(index).gameObject.SetActive(false);
+        infoTabs[selectedInfoTab].transform.GetChild(index - 1).gameObject.SetActive(true);
     }
 
     public void HideInfoTab()
     {
+        SoundEffectsManager.instance.PlayButtonClip();
         infoTabs[selectedInfoTab].SetActive(false);
     }
 

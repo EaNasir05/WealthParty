@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
@@ -182,7 +183,7 @@ public class GameManager
             {
                 if (activitiesState[i][j].player == PlayersManager.players[currentPlayer])
                 {
-                    int[] production = RegionsManager.regions[i].GetCurrentVotesRate();
+                    int[] production = GetPlayerVotesRateOnRegion(i);
                     int votes = Random.Range(production[0], production[1] + 1);
                     AddVotes(votes);
                     activitiesIncomes += votes;
@@ -276,25 +277,53 @@ public class GameManager
         }
     }
 
+    private bool CheckForActivitiesTasks()
+    {
+        foreach (DrawnTask task in drawnTasks)
+        {
+            if (TasksManager.tasks[task.task].GetAction() == 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void DrawNewTask() //Estrae una nuova task
     {
         int randAction = Random.Range(1, 101);
         int action = -1;
         int region = -1;
-        if (randAction > 0 && randAction <= 20)
+        if (CheckForActivitiesTasks())
         {
-            action = 0;
-            region = worstRegions[GetRandomBadRegion(action)];
+            if (randAction > 0 && randAction <= 50)
+            {
+                action = 1;
+                region = worstRegions[GetRandomBadRegion(action)];
+            }
+            else if (randAction > 50 && randAction <= 100)
+            {
+                action = 2;
+                region = bestRegions[GetRandomGoodRegion(action)];
+            }
         }
-        else if (randAction > 20 && randAction <= 60)
+        else
         {
-            action = 1;
-            region = worstRegions[GetRandomBadRegion(action)];
-        }
-        else if (randAction > 60 && randAction <= 100)
-        {
-            action = 2;
-            region = bestRegions[GetRandomGoodRegion(action)];
+            if (randAction > 0 && randAction <= 20)
+            {
+                action = 0;
+                region = worstRegions[GetRandomBadRegion(action)];
+            }
+            else if (randAction > 20 && randAction <= 60)
+            {
+                action = 1;
+                region = worstRegions[GetRandomBadRegion(action)];
+            }
+            else if (randAction > 60 && randAction <= 100)
+            {
+                action = 2;
+                region = bestRegions[GetRandomGoodRegion(action)];
+            }
         }
         int randTask = GetTask(region, action);
         drawnTasks.Add(new DrawnTask(randTask));
