@@ -10,6 +10,7 @@ public class RoundStartManager : MonoBehaviour
     [SerializeField] private GameObject title; //Dai che lo sai...
     [SerializeField] private GameObject roundTitle; //Scritta che indica quale round sta per iniziare
     [SerializeField] private GameObject continueButton; //Bottone da premere per vedere il "turnsOrder"
+    [SerializeField] private GameObject startButton;
     [SerializeField] private GameObject infoTab; // Finestra che mostra le info
     [SerializeField] private GameObject infoButton; // Bottone da premere per vedere l' "infoTab"
     private void Awake()
@@ -43,6 +44,7 @@ public class RoundStartManager : MonoBehaviour
         title.SetActive(true);
         turnsOrder.SetActive(true);
         infoButton.SetActive(true);
+        startButton.SetActive(true);
     }
 
     public void ChangeScene() //Inizia il primo turno

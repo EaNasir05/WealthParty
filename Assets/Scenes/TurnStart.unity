@@ -390,8 +390,8 @@ MonoBehaviour:
 
     PlayerName'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 55df341f595ae234798953733d9a7a65, type: 2}
-  m_sharedMaterial: {fileID: -4946849022672139301, guid: 55df341f595ae234798953733d9a7a65, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}
+  m_sharedMaterial: {fileID: 2552703124514866871, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -705,14 +705,6 @@ MonoBehaviour:
   victoryClip: {fileID: 0}
   nextTurnClip: {fileID: 8300000, guid: b55bb341b817bb14a8eedb7598b850d1, type: 3}
   incomeClip: {fileID: 0}
-  regionsClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mainMenuOST: {fileID: 0}
 --- !u!4 &1386798659
 Transform:
   m_ObjectHideFlags: 0
@@ -847,14 +839,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.49411765, g: 0.19215687, b: 0.17254902, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 26b63053195401d44916394778b63a9a, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0

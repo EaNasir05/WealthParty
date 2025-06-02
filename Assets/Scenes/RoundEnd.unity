@@ -1654,7 +1654,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 212.5, y: -127.5}
+  m_AnchoredPosition: {x: 212.5, y: -450}
   m_SizeDelta: {x: 500, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &510761603
@@ -1954,14 +1954,6 @@ MonoBehaviour:
   victoryClip: {fileID: 0}
   nextTurnClip: {fileID: 8300000, guid: b55bb341b817bb14a8eedb7598b850d1, type: 3}
   incomeClip: {fileID: 0}
-  regionsClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mainMenuOST: {fileID: 0}
 --- !u!4 &544188059
 Transform:
   m_ObjectHideFlags: 0
@@ -2714,7 +2706,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FINE ROUND 0
+  m_text: FINE MESE 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}
   m_sharedMaterial: {fileID: 2552703124514866871, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}

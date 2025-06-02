@@ -1,6 +1,8 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
@@ -34,10 +36,13 @@ public class GameMapManager : MonoBehaviour
     [SerializeField] private Button startActivityButton; //Bottone da premere per avviare l'attività regionale della "selectedRegion" nella "activityTab"
     [SerializeField] private Button buffActivityButton; //Bottone da premere per investire positivamente nell'attività regionale della "selectedRegion" nella "regionTab"
     [SerializeField] private Button nerfActivityButton; //Bottone da premere per investire negativamente nell'attività regionale della "selectedRegion" nella "regionTab"
+    [SerializeField] private GameObject[] infoTabs;
     public static int selectedRegion; //Regione selezionata dalla mappa
+    private int selectedInfoTab;
     public static int lastActivityIncome;
     private bool readyToStart; //Booleana che previene errori di spam
     private bool readyToUpgrade; //Booleana che previene errori di spam
+    private List<int> upgradesOfThisTurn;
 
     private void Awake()
     {
@@ -48,6 +53,7 @@ public class GameMapManager : MonoBehaviour
         {
             tasksButton.interactable = false;
         }
+        upgradesOfThisTurn = new List<int>();
         for (int i = 0; i < 6; i++)
         {
             Player player = GameManager.instance.GetPlayerOnRegion(i);
@@ -56,6 +62,7 @@ public class GameMapManager : MonoBehaviour
                 regionsPlayersIcons[i].texture = player.GetIcon();
                 regionsPlayersIcons[i].gameObject.SetActive(true);
             }
+            upgradesOfThisTurn.Add(0);
         }
     }
 
@@ -110,6 +117,37 @@ public class GameMapManager : MonoBehaviour
         playerInfo[3].GetComponent<TMP_Text>().text = PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney().ToString();
     }
 
+    private void UpdateProductionLevel(int region)
+    {
+        int level = RegionsManager.regions[region].GetLevel() + upgradesOfThisTurn[region];
+        if (level >= 0)
+        {
+            int count = 0;
+            for (int i = 0; i < level; i++)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<RawImage>().color = Color.green;
+                count++;
+            }
+            for (int i = 3; i >= count; i--)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<RawImage>().color = Color.gray;
+            }
+        }
+        else if (level < 0)
+        {
+            int count = 0;
+            for (int i = 0; i < level * -1; i++)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<RawImage>().color = Color.red;
+                count++;
+            }
+            for (int i = 3; i >= count; i--)
+            {
+                regionProductionLevel.transform.GetChild(i).GetComponent<RawImage>().color = Color.gray;
+            }
+        }
+    }
+
     public void SelectRegion(int index) //Apre la regionTab e ne cambia il contenuto in base alla regione selezionata
     {
         SoundEffectsManager.instance.PlayButtonClip();
@@ -141,32 +179,7 @@ public class GameMapManager : MonoBehaviour
         regionActivityCost.text = RegionsManager.regions[index].GetCost().ToString() + "€";
         regionUpgradeCost.text = 500.ToString() + "€";
         selectedRegion = index;
-        int level = RegionsManager.regions[index].GetLevel();
-        if (level >= 0)
-        {
-            int count = 0;
-            for (int i = 0; i < level; i++)
-            {
-                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.green;
-                count++;
-            }
-            for (int i = 3; i >= count; i--)
-            {
-                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
-            }
-        }else if (level < 0)
-        {
-            int count = 0;
-            for (int i = 0; i < level * -1; i++)
-            {
-                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.red;
-                count++;
-            }
-            for (int i = 3; i >= count; i--)
-            {
-                regionProductionLevel.transform.GetChild(i).GetComponent<Image>().color = Color.gray;
-            }
-        }
+        UpdateProductionLevel(index);
         regionTab.SetActive(true);
     }
 
@@ -182,8 +195,8 @@ public class GameMapManager : MonoBehaviour
     {
         SoundEffectsManager.instance.PlayButtonClip();
         activityDuration.text = "1";
-        activityTab.transform.GetChild(0).GetComponent<TMP_Text>().text = RegionsManager.regions[selectedRegion].GetActivity();
-        activityTab.transform.GetChild(3).GetComponent<Button>().interactable = false;
+        activityTab.transform.GetChild(1).GetComponent<TMP_Text>().text = RegionsManager.regions[selectedRegion].GetActivity();
+        activityTab.transform.GetChild(6).GetComponent<Button>().interactable = false;
         activityTab.SetActive(true);
     }
 
@@ -229,7 +242,28 @@ public class GameMapManager : MonoBehaviour
     {
         SoundEffectsManager.instance.PlayButtonClip();
         taskInfoTab.SetActive(false);
-        tasksTab.SetActive(true);
+    }
+
+    public void ShowInfoTab(int index)
+    {
+        selectedInfoTab = index;
+        infoTabs[selectedInfoTab].transform.GetChild(0).gameObject.SetActive(true);
+        for (int i = 1; i < infoTabs[selectedInfoTab].transform.childCount; i++)
+        {
+            infoTabs[selectedInfoTab].transform.GetChild(i).gameObject.SetActive(false);
+        }
+        infoTabs[selectedInfoTab].SetActive(true);
+    }
+
+    public void SwitchInfoTab(int prev, int next)
+    {
+        infoTabs[selectedInfoTab].transform.GetChild(prev).gameObject.SetActive(false);
+        infoTabs[selectedInfoTab].transform.GetChild(next).gameObject.SetActive(true);
+    }
+
+    public void HideInfoTab()
+    {
+        infoTabs[selectedInfoTab].SetActive(false);
     }
 
     public void StartActivity() //Svolge l'attività regionale della "selectedRegion" e aggiorna i dati dei giocatori e della "regionTab"
@@ -280,6 +314,8 @@ public class GameMapManager : MonoBehaviour
             playerMoneyIncome.text = "-500";
             playerMoneyIncome.gameObject.SetActive(true);
             StartCoroutine(DissolveItem(playerMoneyIncome.gameObject, 1));
+            upgradesOfThisTurn[selectedRegion] += value;
+            UpdateProductionLevel(selectedRegion);
             bool completed = GameManager.instance.UpgradeRegion(selectedRegion, value);
             UpdatePlayerStats();
             if (PlayersManager.players[GameManager.instance.GetCurrentPlayer()].GetMoney() < RegionsManager.regions[selectedRegion].GetCost())

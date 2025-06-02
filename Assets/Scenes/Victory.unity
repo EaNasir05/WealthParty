@@ -180,8 +180,8 @@ MonoBehaviour:
 
     PlayerName'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 55df341f595ae234798953733d9a7a65, type: 2}
-  m_sharedMaterial: {fileID: -4946849022672139301, guid: 55df341f595ae234798953733d9a7a65, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}
+  m_sharedMaterial: {fileID: 2552703124514866871, guid: c2b699e54cfb6f741b003b6aec70991c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -847,14 +847,6 @@ MonoBehaviour:
   victoryClip: {fileID: 8300000, guid: dc9390a6e5ae0a44080ec8d0321633c6, type: 3}
   nextTurnClip: {fileID: 0}
   incomeClip: {fileID: 0}
-  regionsClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mainMenuOST: {fileID: 0}
 --- !u!4 &1623967785
 Transform:
   m_ObjectHideFlags: 0
