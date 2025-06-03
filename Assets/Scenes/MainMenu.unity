@@ -202,9 +202,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1869412079}
+      - m_Target: {fileID: 1869412078}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: Quit
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -404,8 +404,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1869412079}
-        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+      - m_Target: {fileID: 1869412081}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: NewGame
         m_Mode: 1
         m_Arguments:
@@ -1042,7 +1042,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1869412080}
-  - component: {fileID: 1869412079}
+  - component: {fileID: 1869412081}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -1050,18 +1050,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1869412079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1869412078}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 157cfc1a27522734a91ecbde668e9e95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1869412080
 Transform:
   m_ObjectHideFlags: 0
@@ -1077,6 +1065,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1869412081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869412078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157cfc1a27522734a91ecbde668e9e95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1970050449
 GameObject:
   m_ObjectHideFlags: 0
@@ -1121,19 +1121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d6a1062403d87a46aac53708f1c7c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundEffectObject: {fileID: 5192730362297039558, guid: f2960e45a1c3175489dcb6cabb4a313d, type: 3}
-  buttonClip: {fileID: 8300000, guid: 7d6ad36bcde354843b3ff6a03c72194b, type: 3}
+  soundEffectObject: {fileID: 0}
+  buttonClip: {fileID: 0}
   victoryClip: {fileID: 0}
   nextTurnClip: {fileID: 0}
   incomeClip: {fileID: 0}
-  regionsClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mainMenuOST: {fileID: 0}
 --- !u!1 &2023193359
 GameObject:
   m_ObjectHideFlags: 0
